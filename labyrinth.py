@@ -2,6 +2,7 @@
 
 import argparse
 import copy
+import pickle
 import pygame
 import sys
 import time
@@ -99,12 +100,13 @@ class Run:
         self.current_state = 0
 
     def __from_file(self, file_path: str):
-        # TODO: Deserialize
-        self.states = [State(terminal=True)]
+        with open(file_path, "rb") as f:
+            self.states = pickle.load(f)
 
     def to_file(self, file_path: str):
-        # TODO: Serialize
-        print(f"Writing run to file \"{file_path}\"")
+        print(f"Writing run to file \"{file_path}.pkl\"")
+        with open(f"{file_path}.pkl", "wb") as f:
+            pickle.dump(self.states, f)
 
     def step_forward(self):
         if self.current_state < len(self.states) - 1:
