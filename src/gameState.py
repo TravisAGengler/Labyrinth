@@ -13,6 +13,7 @@ class Gamestate:
     """
 
     def __init__(self, width=10, height=10, layout=None):
+        self.__agents = {}
         self.__width = width
         self.__height = height
         self.__grid = []
@@ -29,16 +30,17 @@ class Gamestate:
         # We can place agents and items randomly based on criteria
 
         # Place Civilian at (0, 0)
-        self.__grid[0][0].addAgent(Civilian(startingLocation={'x': 0, 'y': 0}))
+        self.__agents["civilian"] = Civilian(startingLocation={'x': 0, 'y': 0})
+        self.__grid[0][0].addAgent(self.__agents["civilian"])
         # Place Soldier at (width-1, 0)
-        self.__grid[self.__width -
-                    1][0].addAgent(Soldier(startingLocation={'x': self.__width-1, 'y': 0}))
+        self.__agents["soldier"] = Soldier(startingLocation={'x': self.__width-1, 'y': 0})
+        self.__grid[self.__width - 1][0].addAgent(self.__agents["soldier"])
         # Place Scientist at (0, height-1)
-        self.__grid[0][self.__height -
-                       1].addAgent(Scientist(startingLocation={'x': 0, 'y': self.__height-1}))
+        self.__agents["scientist"] = Scientist(startingLocation={'x': 0, 'y': self.__height-1})
+        self.__grid[0][self.__height - 1].addAgent(self.__agents["scientist"])
         # Place Monster at (width-1, height-1)
-        self.__grid[self.__width-1][self.__height - 1].addAgent(
-            Monster(startingLocation={'x': self.__width-1, 'y': self.__height-1}))
+        self.__agents["monster"] = Monster(startingLocation={'x': self.__width-1, 'y': self.__height-1})
+        self.__grid[self.__width-1][self.__height - 1].addAgent(self.__agents["monster"])
 
         # Place Research at (1, 1)
         self.__grid[1][1].addItem(Item.research)
@@ -64,3 +66,6 @@ class Gamestate:
 
     def getCellAt(self, x, y):
         return self.__grid[x][y]
+
+    def getAgents(self):
+        return self.__agents

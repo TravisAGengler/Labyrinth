@@ -29,7 +29,7 @@ class Agent(ABC):
     """
 
     @abstractmethod
-    def findValidActions(self, actions):
+    def getValidActions(self, actions):
         """
         Find which actions are valid to perform
         :param actions:  the list of all possible actions the agent can choose from
@@ -142,27 +142,14 @@ class Agent(ABC):
         self.turnLeft()
         self.turnLeft()
 
-    def move(self, cell):
+    def move(self):
         """
         Move the hero forwards 1 cell in the direction he is facing
         :param cell:  the current cell the Agent is in
         :return:      the new cell the Agent moved to
         """
-        # TODO: Discuss with group how exactly Agent will move in the grid. Ideally, the Agent isn't ever passed the whole grid
-        # TODO: Right now, the agent sets its __locaiton variable to its new location and returns it, but somewhere that change will need to happen in the grid itself
-        # if agent runs into a wall, prevent him from moving forwards. Fail-safe, shouldn't ever be called
-        if self.getDirection() == self.UP and cell.isWallUp():
-            return self.getLocation()
-        elif self.getDirection() == self.DOWN and cell.isWallDown():
-            return self.getLocation()
-        elif self.getDirection() == self.LEFT and cell.isWallLeft():
-            return self.getLocation()
-        elif self.getDirection() == self.RIGHT and cell.isWallRight():
-            return self.getLocation()
-        else:  # can move
-            # cell.removeAgent(self)  # TODO: another piece of the code may handle the placement of agents in cells. Bad practice to remove from cell in one part of the code and add to cell in another
-            self.__location = self.__getForwards()
-            return self.__location
+        self.__location = self.__getForwards()
+        return self.__location
 
     """
     Misc

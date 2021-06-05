@@ -17,7 +17,7 @@ class SimulationParams:
 
 
 class Run:
-    states: list[Gamestate] = []
+    states = []
     current_state: int = 0
 
     def __init__(self, load_path: str = "", params: SimulationParams = SimulationParams()):
