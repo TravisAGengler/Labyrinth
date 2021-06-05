@@ -1,10 +1,10 @@
 from agent import Agent
 
-class Soldier(Agent):
+
+class Scientist(Agent):
 
     def __init__(self, startingLocation):
-        super(startingLocation).__init__()
-
+        super(Scientist, self).__init__(startingLocation)
 
     def findValidActions(self, actions):
         """
@@ -22,19 +22,18 @@ class Soldier(Agent):
         """
         actionUtility = {}
         for action in self.getValidActions(self.getActions()):
-            actionUtility[action] = self.__getUtility(action, percepts)
+            actionUtility[action] = self._getUtility(action, percepts)
         return max(actionUtility, key=actionUtility.get)
 
     """
     Actions
     """
 
-
     """
     Private Methods
     """
 
-    def __getUtility(self, action, percepts):
+    def _getUtility(self, action, percepts):
         """
         Get the utility of a potential action
         :param action:    the action to determine the utility of

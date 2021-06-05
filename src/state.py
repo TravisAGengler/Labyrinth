@@ -16,8 +16,7 @@ class State:
         for i in range(width):
             self.__grid.append([])
             for j in range(height):
-                self.__grid[j].append(None)
-
+                self.__grid[i].append(None)
 
     def remember(self, x, y, cell):
         self.__grid[x][y] = cell
