@@ -20,3 +20,6 @@ class State:
 
     def remember(self, x, y, cell):
         self.__grid[x][y] = cell
+
+    def getCellAt(self, x, y):
+        return self.__grid[x][y]

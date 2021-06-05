@@ -37,16 +37,16 @@ class Cell:
     def setCellRight(self, cell):
         self.cellRight = cell
 
-    def getCellUp(self, cell):
+    def getCellUp(self):
         return self.cellUp
 
-    def getCellDown(self, cell):
+    def getCellDown(self):
         return self.cellDown
 
-    def getCellLeft(self, cell):
+    def getCellLeft(self):
         return self.cellLeft
 
-    def getCellRight(self, cell):
+    def getCellRight(self):
         return self.cellRight
 
     def getItemList(self):

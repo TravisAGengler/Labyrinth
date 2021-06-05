@@ -35,6 +35,10 @@ def main():
     inputManager = InputManager()
     agents = run.get_state().getAgents()
 
+    # let the agents initially observe the environment
+    for agent in agents.values():
+        agent.observe(run.get_state().getCellAt(agent.getLocation()['x'], agent.getLocation()['y']))
+
     while True:
         event = inputManager.getInputEvent()
         if event == InputEvent.terminate:
@@ -51,6 +55,7 @@ def main():
 
         for agent in agents.values():
             if agent.isAlive():
+                agent.observe(run.get_state().getCellAt(agent.getLocation()['x'], agent.getLocation()['y']))
                 action = agent.chooseAction()
                 if action == agent.move:
                     # remove agent from old cell

@@ -12,10 +12,11 @@ class Agent(ABC):
     RIGHT = "right"
     DIRECTIONS = [UP, DOWN, LEFT, RIGHT]
 
-    def __init__(self, startingLocation):
+    def __init__(self, startingLocation, sightRange):
         self.__location = startingLocation  # {'x': x, 'y', y}
+        self.__sightRange = sightRange  # how far the agent can see in front of itself
         self.__state = State(memoryLoss=0)
-        # TODO: possibly change this, will depend on how agents are spawned in
+        # TODO: possibly change how direction is selected, will depend on how agents are spawned in
         self.__direction = random.choice(self.DIRECTIONS)
         self.__inventory = []
         self.__isAlive = True
@@ -23,6 +24,7 @@ class Agent(ABC):
 
         self.__actions = [self.pickUp, self.die, self.win,
                           self.turnRight, self.turnLeft, self.turnAround, self.move]
+
 
     """
     Abstract Methods
@@ -66,6 +68,9 @@ class Agent(ABC):
 
     def getLocation(self):
         return self.__location
+
+    def getSightRange(self):
+        return self.__sightRange
 
     def getDirection(self):
         return self.__direction
@@ -151,9 +156,68 @@ class Agent(ABC):
         self.__location = self.__getForwards()
         return self.__location
 
+    def doNothing(self):
+        """
+        The agent does nothing
+        This is for debugging and fail-safe purposes, and should never happen in a real run
+        """
+        return
+
     """
     Misc
     """
+
+    def observe(self, cell):
+        """
+        Take a look at the environment and add it to agent's internal state
+        Does not count as an action, as it is always performed every tick
+        :param cell:  The cell the agent is currently in
+        """
+        # remember cell agent is standing in
+        self.__state.remember(self.getLocation()['x'], self.getLocation()['y'], cell)
+        # remember cells the agent can see in front of itself
+        seenCell = cell
+        seenCellDirection = [0, 0]  # positive and negative x and y modifiers
+        for i in range(self.getSightRange()):
+            if self.getDirection() == self.UP:
+                seenCell = seenCell.getCellUp()
+                seenCellDirection[1] -= 1
+            elif self.getDirection() == self.DOWN:
+                seenCell = seenCell.getCellDown()
+                seenCellDirection[1] += 1
+            elif self.getDirection() == self.LEFT:
+                seenCell = seenCell.getCellLeft()
+                seenCellDirection[0] -= 1
+            elif self.getDirection() == self.RIGHT:
+                seenCell = seenCell.getCellRight()
+                seenCellDirection[0] += 1
+
+            if seenCell == None:  # reached end of grid
+                break
+            else:
+                try:
+                    self.__state.remember(self.getLocation()['x'] + seenCellDirection[0],
+                                          self.getLocation()['y'] + seenCellDirection[1],
+                                          seenCell)
+                except Exception as err:
+                    print(seenCell)
+                    raise(err)
+
+    def canMove(self, cell):
+        """
+        Check if the agent can legally move forwards. Walls and grid edges prevent movement
+        :param cell:  The cell the agent is currently in
+        :return:      True if can move forwards, false if not
+        """
+        if self.getDirection() == self.UP and (cell.isWallUp() or cell.getCellUp() == None):
+            return False
+        elif self.getDirection() == self.DOWN and (cell.isWallDown() or cell.getCellDown() == None):
+            return False
+        elif self.getDirection() == self.LEFT and (cell.isWallLeft() or cell.getCellLeft() == None):
+            return False
+        elif self.getDirection() == self.RIGHT and (cell.isWallRight() or cell.getCellRight() == None):
+            return False
+        return True
 
     def seenAgents(self):
         """

@@ -3,8 +3,8 @@ from agent import Agent
 
 class Monster(Agent):
 
-    def __init__(self, startingLocation):
-        super(Monster, self).__init__(startingLocation)
+    def __init__(self, startingLocation, sightRange):
+        super(Monster, self).__init__(startingLocation, sightRange)
         self.addAction(self.kill)
 
     def getValidActions(self, actions):
@@ -13,19 +13,13 @@ class Monster(Agent):
         :param actions:  the list of all possible actions the agent can choose from
         :return:         the list of all valid actions the agent can choose from
         """
+        validMoves = []
+        cell = self.getState().getCellAt(self.getLocation()['x'], self.getLocation()['y'])
 
-        # TODO: check if cell in internal state has wall, instead of cell in absolute state
-        # if agent runs into a wall, prevent him from moving forwards.
-        # if self.getDirection() == self.UP and cell.isWallUp():
-        #     return self.getLocation()
-        # elif self.getDirection() == self.DOWN and cell.isWallDown():
-        #     return self.getLocation()
-        # elif self.getDirection() == self.LEFT and cell.isWallLeft():
-        #     return self.getLocation()
-        # elif self.getDirection() == self.RIGHT and cell.isWallRight():
-        #     return self.getLocation()
+        if self.canMove(cell):
+            validMoves.append(self.move)
 
-        return [self.move]  # TODO: temp just for testing. needs to check for collisions, etc
+        return validMoves
 
     def chooseAction(self):
         """
@@ -33,7 +27,12 @@ class Monster(Agent):
         :return:          the chosen action function
         """
         actionUtility = {}
-        for action in self.getValidActions(self.getActions()):
+
+        validActions = self.getValidActions(self.getActions())
+        if len(validActions) == 0:
+            return self.doNothing
+
+        for action in validActions:
             actionUtility[action] = self._getUtility(action, self.getState())
         return max(actionUtility, key=actionUtility.get)
 

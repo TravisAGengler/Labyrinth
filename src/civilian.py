@@ -3,8 +3,8 @@ from agent import Agent
 
 class Civilian(Agent):
 
-    def __init__(self, startingLocation):
-        super(Civilian, self).__init__(startingLocation)
+    def __init__(self, startingLocation, sightRange):
+        super(Civilian, self).__init__(startingLocation, sightRange)
 
     def getValidActions(self, actions):
         """
@@ -12,7 +12,13 @@ class Civilian(Agent):
         :param actions:  the list of all possible actions the agent can choose from
         :return:         the list of all valid actions the agent can choose from
         """
-        return [self.move]  # TODO: temp just for testing. needs to check for collisions, etc
+        validMoves = []
+        cell = self.getState().getCellAt(self.getLocation()['x'], self.getLocation()['y'])
+
+        if self.canMove(cell):
+            validMoves.append(self.move)
+
+        return validMoves
 
     def chooseAction(self):
         """
@@ -20,6 +26,11 @@ class Civilian(Agent):
         :return:          the chosen action function
         """
         actionUtility = {}
+
+        validActions = self.getValidActions(self.getActions())
+        if len(validActions) == 0:
+            return self.doNothing
+
         for action in self.getValidActions(self.getActions()):
             actionUtility[action] = self._getUtility(action, self.getState())
         return max(actionUtility, key=actionUtility.get)
