@@ -1,11 +1,11 @@
 from agent import Agent
 
+
 class Monster(Agent):
 
     def __init__(self, startingLocation):
-        super(startingLocation).__init__()
+        super(Monster, self).__init__(startingLocation)
         self.addAction(self.kill)
-
 
     def findValidActions(self, actions):
         """
@@ -23,9 +23,8 @@ class Monster(Agent):
         """
         actionUtility = {}
         for action in self.getValidActions(self.getActions()):
-            actionUtility[action] = self.__getUtility(action, state)
+            actionUtility[action] = self._getUtility(action, state)
         return max(actionUtility, key=actionUtility.get)
-
 
     """
     Actions
@@ -38,12 +37,11 @@ class Monster(Agent):
         """
         pass
 
-
     """
     Private Methods
     """
 
-    def __getUtility(self, action, state):
+    def _getUtility(self, action, state):
         """
         Get the utility of a potential action
         :param action:    the action to determine the utility of
@@ -52,7 +50,8 @@ class Monster(Agent):
         """
         utility = {
             self.kill: 100,  # monster will always attack when able
-            self.move: 50 if self.seenAgents() != [] else 1,  # prioritize moving towards target  # TODO:  ambush behavior
+            # prioritize moving towards target  # TODO:  ambush behavior
+            self.move: 50 if self.seenAgents() != [] else 1,
         }
 
         if not self.knowsSurroundings():

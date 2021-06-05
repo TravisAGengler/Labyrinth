@@ -3,6 +3,7 @@ import random
 
 from state import State
 
+
 class Agent(ABC):
 
     UP = "up"
@@ -14,13 +15,14 @@ class Agent(ABC):
     def __init__(self, startingLocation):
         self.__location = startingLocation  # {'x': x, 'y', y}
         self.__state = State(memoryLoss=0)
-        self.__direction = random.choice(self.DIRECTIONS)  # TODO: possibly change this, will depend on how agents are spawned in
+        # TODO: possibly change this, will depend on how agents are spawned in
+        self.__direction = random.choice(self.DIRECTIONS)
         self.__inventory = []
         self.__isAlive = True
         self.__score = 0
 
-        self.__actions = [self.pickUp, self.die, self.win, self.turnRight, self.turnLeft, self.turnAround, self.move]
-
+        self.__actions = [self.pickUp, self.die, self.win,
+                          self.turnRight, self.turnLeft, self.turnAround, self.move]
 
     """
     Abstract Methods
@@ -45,8 +47,11 @@ class Agent(ABC):
         """
         pass
 
+    # TRICKY: While we would prefer to have this be a "private" method,
+    # mangling makes it impossible to implement in the subclasses
+    # See https://stackoverflow.com/a/31458576/7759262
     @abstractmethod
-    def __getUtility(self, action, percepts):
+    def _getUtility(self, action, percepts):
         """
         Get the utility of a potential action
         :param action:    the action to determine the utility of
@@ -54,7 +59,6 @@ class Agent(ABC):
         :return:          the numerical utility of the action
         """
         pass
-
 
     """
     Getter Methods
@@ -81,7 +85,6 @@ class Agent(ABC):
     def getActions(self):
         return self.__actions
 
-
     """
     Setter Methods
     """
@@ -94,7 +97,6 @@ class Agent(ABC):
 
     def addAction(self, action):
         self.__actions.append(action)
-
 
     """
     Actions
@@ -165,6 +167,7 @@ class Agent(ABC):
     """
     Misc
     """
+
     def seenAgents(self):
         """
         Determine if the agent can see another agent
@@ -180,7 +183,6 @@ class Agent(ABC):
         """
         # TODO: check if all surrounding cells in state are not None
         pass
-
 
     """
     Private Methods
