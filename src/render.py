@@ -53,6 +53,30 @@ class Renderer:
         pygame.draw.line(self.__displaySurface, color,
                          (x1, y1), (x2, y2), width)
 
+    def __drawTri(self, tri: [(int, int), (int, int), (int, int)], color: (int, int, int)):
+        pygame.draw.polygon(self.__displaySurface, color, tri)
+
+    def __getFacingTri(self, direction: str, x: int, y: int, w: int, h: int):
+        tl = (x, y)
+        tr = (x + w, y)
+        br = (x + w, y + h)
+        bl = (x, y + h)
+
+        cu = (x + w/2, y)
+        cr = (x + w, y + h/2)
+        cd = (x + w/2, y + h)
+        cl = (x, y + h/2)
+
+        if direction == "right":
+            return [tl, cr, bl]
+        if direction == "up":
+            return [bl, cu, br]
+        if direction == "left":
+            return [br, cl, tr]
+        if direction == "down":
+            return [tl, cd, tr]
+        return []
+
     def __drawItem(self, x: int, y: int, item: Item):
         color = COLOR_DARKGRAY
         xr, yr = (x * self.__cellWidth, y * self.__cellHeight)
@@ -94,6 +118,9 @@ class Renderer:
         # TODO: When we get images, draw the image instead.
         self.__drawCircle(xr, yr, self.__cellWidth // 2,
                           self.__cellHeight // 2, color)
+        facingTri = self.__getFacingTri(
+            agent.getDirection(), xr, yr, self.__cellWidth//2, self.__cellHeight//2)
+        self.__drawTri(facingTri, COLOR_WHITE)
 
     def __drawWalls(self, x: int, y: int, walls: {"up": bool, "right": bool, "down": bool, "left": bool}):
         color = COLOR_WHITE

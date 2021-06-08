@@ -33,44 +33,20 @@ def main():
                         cellHeight=80,
                         fps=10)
     inputManager = InputManager()
-    agents = run.get_state().getAgents()
-
-    # let the agents initially observe the environment
-    for agent in agents.values():
-        agent.observe(run.get_state().getCellAt(agent.getLocation()['x'], agent.getLocation()['y']))
 
     while True:
         event = inputManager.getInputEvent()
         if event == InputEvent.terminate:
             terminate()
         elif event == InputEvent.nextState:
-            run.step_forward()
+            run.stepForward()
         elif event == InputEvent.prevState:
-            run.step_back()
+            run.stepBack()
         elif event == InputEvent.saveRun:
-            run.to_file()
+            run.toFile()
         elif event == InputEvent.newRun:
             run = Run()
-        renderer.draw(run.get_state())
-
-        for agent in agents.values():
-            if agent.isAlive():
-                agent.observe(run.get_state().getCellAt(agent.getLocation()['x'], agent.getLocation()['y']))
-                action = agent.chooseAction()
-                if action == agent.move:
-                    # remove agent from old cell
-                    run.get_state().getCellAt(agent.getLocation()['x'], agent.getLocation()['y']).removeAgent(agent)
-                    # update agent's internal position
-                    action()
-                    # place agent in new cell
-                    run.get_state().getCellAt(agent.getLocation()['x'], agent.getLocation()['y']).addAgent(agent)
-                else:
-                    # most actions can be handled with a general call like this
-                    # specific cases, such as move (shown above), can be handled in their own blocks
-                    action()
-
-
-
+        renderer.draw(run.getState())
 
 
 if __name__ == '__main__':
