@@ -6,35 +6,46 @@ import time
 from gameState import Gamestate
 
 
-class SimulationParams:
+class SimParams:
     """
-    This allows us to configure how runs are generated
+    This allows us to configure the simulation
     """
 
-    def __init__(self):
-        # TODO: Allow customization of runs through these params
-        pass
+    def __init__(self, width: int = 10, height: int = 10, layout=None):
+        self.__width = width
+        self.__height = height
+        self.__layout = layout
+
+    def getWidth(self):
+        return self.__width
+
+    def getHeight(self):
+        return self.__height
+
+    def getLayout(self):
+        return self.__layout
 
 
 class Run:
     states = []
     current_state: int = 0
 
-    def __init__(self, load_path: str = "", params: SimulationParams = SimulationParams()):
+    def __init__(self, load_path: str = "", simParams: SimParams = SimParams()):
         if load_path:
             print(f"Loading run from \"{load_path}\"")
             self.__from_file(load_path)
         else:
             print(f"Simulating new run")
-            self.__simulateRun()
+            self.__simulateRun(simParams)
         self.current_state = 0
 
-    def __simulateRun(self):
+    def __simulateRun(self, params: SimParams):
         # TODO: Just generate the first 10 steps for now.
         # TODO: Add termination criteria later (No remaining humans, or humans escaped)
         roundLimit = 10
         terminated = False
-        self.states = [Gamestate()]
+        self.states = [
+            Gamestate(width=params.getWidth(), height=params.getHeight(), layout=params.getLayout())]
         while len(self.states) < roundLimit and not terminated:
             nextState = copy.deepcopy(self.states[-1])
 

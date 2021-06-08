@@ -12,7 +12,7 @@ class Gamestate:
     This is the representation for the true state of the game, separate from the Agent State (state.py)
     """
 
-    def __init__(self, width=10, height=10, layout=None):
+    def __init__(self, width, height, layout):
         self.__agents = {}
         self.__width = width
         self.__height = height
@@ -27,24 +27,28 @@ class Gamestate:
         self.__linkCells()
 
     def __applyLayout(self, layout):
-        # TODO: This is just a proof for rendering. Replace this with a better layout.
+        # TODO: This is just a proof for rendering. Replace this with something we make from the layout provided
         # We can place agents and items randomly based on criteria
 
         # Place Civilian at (0, 0)
         self.__agents["civilian"] = Civilian(
-            startingLocation={'x': 0, 'y': 0}, sightRange=3)
+            startingLocation={'x': 0, 'y': 0},
+            sightRange=3, width=self.__width, height=self.__height)
         self.__grid[0][0].addAgent(self.__agents["civilian"])
         # Place Soldier at (width-1, 0)
         self.__agents["soldier"] = Soldier(
-            startingLocation={'x': self.__width-1, 'y': 0}, sightRange=3)
+            startingLocation={'x': self.__width-1, 'y': 0},
+            sightRange=3, width=self.__width, height=self.__height)
         self.__grid[self.__width - 1][0].addAgent(self.__agents["soldier"])
         # Place Scientist at (0, height-1)
         self.__agents["scientist"] = Scientist(
-            startingLocation={'x': 0, 'y': self.__height-1}, sightRange=3)
+            startingLocation={'x': 0, 'y': self.__height-1},
+            sightRange=3, width=self.__width, height=self.__height)
         self.__grid[0][self.__height - 1].addAgent(self.__agents["scientist"])
         # Place Monster at (width-1, height-1)
         self.__agents["monster"] = Monster(
-            startingLocation={'x': self.__width-1, 'y': self.__height-1}, sightRange=3)
+            startingLocation={'x': self.__width-1, 'y': self.__height-1},
+            sightRange=3, width=self.__width, height=self.__height)
         self.__grid[self.__width-1][self.__height -
                                     1].addAgent(self.__agents["monster"])
 

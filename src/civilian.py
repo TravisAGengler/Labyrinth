@@ -3,8 +3,9 @@ from agent import Agent
 
 class Civilian(Agent):
 
-    def __init__(self, startingLocation, sightRange):
-        super(Civilian, self).__init__(startingLocation, sightRange)
+    def __init__(self, startingLocation, sightRange, width, height):
+        super(Civilian, self).__init__(
+            startingLocation, sightRange, width, height)
 
     def getValidActions(self, actions):
         """
@@ -13,7 +14,8 @@ class Civilian(Agent):
         :return:         the list of all valid actions the agent can choose from
         """
         validMoves = []
-        cell = self.getState().getCellAt(self.getLocation()['x'], self.getLocation()['y'])
+        cell = self.getState().getCellAt(
+            self.getLocation()['x'], self.getLocation()['y'])
 
         if self.canMove(cell):
             validMoves.append(self.move)

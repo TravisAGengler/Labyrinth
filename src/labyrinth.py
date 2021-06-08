@@ -6,7 +6,7 @@ import sys
 
 from inputManager import InputManager, InputEvent
 from render import Renderer
-from run import Run
+from run import Run, SimParams
 
 
 class LabyrinthArgs:
@@ -26,11 +26,16 @@ def terminate():
 
 def main():
     args = LabyrinthArgs()
-    run = Run(load_path=args.run_path) if args.run_path else Run()
+    # TODO: Add the fixed layout here. Right now, our layout is hardcoded in gameState.py
+    # We might even be able to derive width and height from the layout.
+    # And if that is the case, SimParams is useless, just use layout
+    simParams = SimParams(width=10, height=10, layout=None)
+    run = Run(load_path=args.run_path) if args.run_path else Run(
+        simParams=simParams)
     renderer = Renderer(windowWidth=800,
                         windowHeight=800,
-                        cellWidth=80,
-                        cellHeight=80,
+                        nCellsHorizontal=simParams.getWidth(),
+                        nCellsVertical=simParams.getHeight(),
                         fps=10)
     inputManager = InputManager()
 
@@ -45,7 +50,7 @@ def main():
         elif event == InputEvent.saveRun:
             run.toFile()
         elif event == InputEvent.newRun:
-            run = Run()
+            run = Run(simParams=simParams)
         renderer.draw(run.getState())
 
 

@@ -12,10 +12,10 @@ class Agent(ABC):
     RIGHT = "right"
     DIRECTIONS = [UP, DOWN, LEFT, RIGHT]
 
-    def __init__(self, startingLocation, sightRange):
+    def __init__(self, startingLocation, sightRange, width, height):
         self.__location = startingLocation  # {'x': x, 'y', y}
         self.__sightRange = sightRange  # how far the agent can see in front of itself
-        self.__state = State(memoryLoss=0)
+        self.__state = State(memoryLoss=0, width=width, height=height)
         # TODO: possibly change how direction is selected, will depend on how agents are spawned in
         self.__direction = random.choice(self.DIRECTIONS)
         self.__inventory = []
@@ -24,7 +24,6 @@ class Agent(ABC):
 
         self.__actions = [self.pickUp, self.die, self.win,
                           self.turnRight, self.turnLeft, self.turnAround, self.move]
-
 
     """
     Abstract Methods
@@ -174,7 +173,8 @@ class Agent(ABC):
         :param cell:  The cell the agent is currently in
         """
         # remember cell agent is standing in
-        self.__state.remember(self.getLocation()['x'], self.getLocation()['y'], cell)
+        self.__state.remember(
+            self.getLocation()['x'], self.getLocation()['y'], cell)
         # remember cells the agent can see in front of itself
         seenCell = cell
         seenCellDirection = [0, 0]  # positive and negative x and y modifiers
@@ -197,8 +197,9 @@ class Agent(ABC):
             else:
                 try:
                     self.__state.remember(self.getLocation()['x'] + seenCellDirection[0],
-                                          self.getLocation()['y'] + seenCellDirection[1],
-                                          seenCell)
+                                          self.getLocation()[
+                        'y'] + seenCellDirection[1],
+                        seenCell)
                 except Exception as err:
                     print(seenCell)
                     raise(err)

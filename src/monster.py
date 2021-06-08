@@ -3,8 +3,9 @@ from agent import Agent
 
 class Monster(Agent):
 
-    def __init__(self, startingLocation, sightRange):
-        super(Monster, self).__init__(startingLocation, sightRange)
+    def __init__(self, startingLocation, sightRange, width, height):
+        super(Monster, self).__init__(
+            startingLocation, sightRange, width, height)
         self.addAction(self.kill)
 
     def getValidActions(self, actions):
@@ -14,7 +15,8 @@ class Monster(Agent):
         :return:         the list of all valid actions the agent can choose from
         """
         validMoves = []
-        cell = self.getState().getCellAt(self.getLocation()['x'], self.getLocation()['y'])
+        cell = self.getState().getCellAt(
+            self.getLocation()['x'], self.getLocation()['y'])
 
         if self.canMove(cell):
             validMoves.append(self.move)

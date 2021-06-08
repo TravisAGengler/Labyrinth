@@ -29,15 +29,15 @@ class Renderer:
     This class is responsible for rendering a Gamestate (gameState.py)
     """
 
-    def __init__(self, windowWidth=800, windowHeight=800, cellWidth=80, cellHeight=80, fps=10):
+    def __init__(self, windowWidth, windowHeight, nCellsHorizontal, nCellsVertical, fps=10):
         pygame.init()
         self.__clearColor = COLOR_BLACK
         self.__fps = fps
         self.__fpsClock = pygame.time.Clock()
         self.__windowWidth = windowWidth
         self.__windowHeight = windowHeight
-        self.__cellWidth = cellWidth
-        self.__cellHeight = cellHeight
+        self.__cellWidth = windowWidth//nCellsHorizontal
+        self.__cellHeight = windowHeight//nCellsVertical
         self.__displaySurface = pygame.display.set_mode(
             (self.__windowWidth, self.__windowHeight))
         pygame.display.set_caption('Labyrinth')
