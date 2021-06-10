@@ -13,6 +13,12 @@ class Cell:
         self.itemList = []
         self.agentList = []
 
+    def setWalls(self, up, down, left, right):
+        self.WALL_UP = up
+        self.WALL_DOWN = down
+        self.WALL_LEFT = left
+        self.WALL_RIGHT = right
+
     def isWallUp(self):
         return self.WALL_UP
 
