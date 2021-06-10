@@ -56,8 +56,4 @@ class Civilian(Agent):
             self.move: 100
         }
 
-        if not self.knowsSurroundings():
-            # set value of turnLeft, turnRight to 2. Agent prioritizes knowing its environment over moving forwards.
-            pass
-
         return utility[action]
