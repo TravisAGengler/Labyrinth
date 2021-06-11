@@ -3,9 +3,9 @@ from agent import Agent
 
 class Soldier(Agent):
 
-    def __init__(self, startingLocation, sightRange, width, height):
+    def __init__(self, startingLocation, sightRange, width, height, name):
         super(Soldier, self).__init__(
-            startingLocation, sightRange, width, height)
+            startingLocation, sightRange, width, height, name)
         self.addAction(self.shoot)
 
     def getValidActions(self, actions):

@@ -33,22 +33,22 @@ class Gamestate:
         # Place Civilian at (0, 0)
         self.__agents["civilian"] = Civilian(
             startingLocation={'x': 0, 'y': 0},
-            sightRange=3, width=self.__width, height=self.__height)
+            sightRange=3, width=self.__width, height=self.__height, name="civilian")
         self.__grid[0][0].addAgent(self.__agents["civilian"])
         # Place Soldier at (width-1, 0)
         self.__agents["soldier"] = Soldier(
             startingLocation={'x': self.__width-1, 'y': 0},
-            sightRange=3, width=self.__width, height=self.__height)
+            sightRange=3, width=self.__width, height=self.__height, name="soldier")
         self.__grid[self.__width - 1][0].addAgent(self.__agents["soldier"])
         # Place Scientist at (0, height-1)
         self.__agents["scientist"] = Scientist(
             startingLocation={'x': 0, 'y': self.__height-1},
-            sightRange=3, width=self.__width, height=self.__height)
+            sightRange=3, width=self.__width, height=self.__height, name="scientist")
         self.__grid[0][self.__height - 1].addAgent(self.__agents["scientist"])
         # Place Monster at (width-1, height-1)
         self.__agents["monster"] = Monster(
             startingLocation={'x': self.__width-1, 'y': self.__height-1},
-            sightRange=3, width=self.__width, height=self.__height)
+            sightRange=3, width=self.__width, height=self.__height, name="monster")
         self.__grid[self.__width-1][self.__height -
                                     1].addAgent(self.__agents["monster"])
 

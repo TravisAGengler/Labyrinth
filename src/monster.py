@@ -5,9 +5,9 @@ from agent import Agent
 
 class Monster(Agent):
 
-    def __init__(self, startingLocation, sightRange, width, height):
+    def __init__(self, startingLocation, sightRange, width, height, name):
         super(Monster, self).__init__(
-            startingLocation, sightRange, width, height)
+            startingLocation, sightRange, width, height, name)
         self.addAction(self.kill)
         self.addAction(self.run)
 
@@ -17,17 +17,17 @@ class Monster(Agent):
         :param actions:  the list of all possible actions the agent can choose from
         :return:         the list of all valid actions the agent can choose from
         """
-        validMoves = [self.turnLeft, self.turnRight, self.turnAround]
+        validActions = [self.turnLeft, self.turnRight, self.turnAround]
         cell = self.getState().getCellAt(
             self.getLocation()['x'], self.getLocation()['y'])
 
         if self.canMove(cell):
-            validMoves.append(self.move)
+            validActions.append(self.move)
 
-        # if self.canAttack():
-        #     validMoves.append(self.kill)
+        if self.__canAttack():
+            validActions.append(self.kill)
 
-        return validMoves
+        return validActions
 
     def chooseAction(self):
         """
@@ -66,9 +66,18 @@ class Monster(Agent):
 
     def kill(self):
         """
-        Kill a targeted agent
+        Kill targeted agent(s)
+        :return:  The agent that was killed
         """
-        pass
+        currentCell = self.getState().getCellAt(self.getLocation()["x"], self.getLocation()["y"])
+        agents = currentCell.getAgentList()
+        targets = []
+        for agent in agents:
+            if not isinstance(agent, Monster):
+                targets.append(agent)
+        for target in targets:
+            print(self.getName() + " killed " + target.getName())
+        return targets
 
     def run(self):
         """
@@ -176,3 +185,8 @@ class Monster(Agent):
             return True
         else:
             return False
+
+    def __canAttack(self):
+        currentCell = self.getState().getCellAt(self.getLocation()["x"], self.getLocation()["y"])
+        if currentCell.getAgentList() != [self]:
+            return True

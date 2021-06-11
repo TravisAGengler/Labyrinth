@@ -12,7 +12,7 @@ class Agent(ABC):
     RIGHT = "right"
     DIRECTIONS = [UP, DOWN, LEFT, RIGHT]
 
-    def __init__(self, startingLocation, sightRange, width, height):
+    def __init__(self, startingLocation, sightRange, width, height, name):
         self.__location = startingLocation  # {'x': x, 'y', y}
         self.__sightRange = sightRange  # how far the agent can see in front of itself
         self.__state = State(memoryLoss=0, width=width, height=height)
@@ -21,6 +21,7 @@ class Agent(ABC):
         self.__inventory = []
         self.__isAlive = True
         self.__score = 0
+        self.__name = name
 
         # map of how to turn based on current direction and desired direction
         # (agentDirection, desiredDirection): turnFunction
@@ -108,6 +109,9 @@ class Agent(ABC):
 
     def getActions(self):
         return self.__actions
+
+    def getName(self):
+        return self.__name
 
     """
     Setter Methods
@@ -258,8 +262,10 @@ class Agent(ABC):
         :return:  List of agents that are seen. Empty if sees none.
         """
         seenAgents = []
-
-
+        seenCells = self.getSeenCells()
+        for cell in seenCells.keys():
+            for agent in cell.getAgentList():
+                seenAgents.append(agent)
         return seenAgents
 
 

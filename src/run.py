@@ -4,7 +4,10 @@ import time
 
 
 from gameState import Gamestate
-
+from civilian import Civilian
+from soldier import Soldier
+from scientist import Scientist
+from monster import Monster
 
 class SimParams:
     """
@@ -42,7 +45,7 @@ class Run:
     def __simulateRun(self, params: SimParams):
         # TODO: Just generate the first 10 steps for now.
         # TODO: Add termination criteria later (No remaining humans, or humans escaped)
-        roundLimit = 10
+        roundLimit = 100
         terminated = False
         self.states = [
             Gamestate(width=params.getWidth(), height=params.getHeight(), layout=params.getLayout())]
@@ -50,21 +53,27 @@ class Run:
             nextState = copy.deepcopy(self.states[-1])
 
             for agent in nextState.getAgents().values():
-                agent.observe(nextState.getCellAt(
-                    agent.getLocation()['x'], agent.getLocation()['y']))
                 if agent.isAlive():
-                    agent.observe(nextState.getCellAt(
-                        agent.getLocation()['x'], agent.getLocation()['y']))
+                    agent.observe(nextState.getCellAt(agent.getLocation()['x'],
+                                                      agent.getLocation()['y']))
                     action = agent.chooseAction()
                     if action == agent.move:
                         # remove agent from old cell
-                        nextState.getCellAt(agent.getLocation()[
-                            'x'], agent.getLocation()['y']).removeAgent(agent)
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).removeAgent(agent)
                         # update agent's internal position
                         action()
                         # place agent in new cell
-                        nextState.getCellAt(agent.getLocation()[
-                            'x'], agent.getLocation()['y']).addAgent(agent)
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).addAgent(agent)
+                    elif isinstance(agent, Monster) and action == agent.kill:
+                        targets = action()
+                        for target in targets:
+                            target.die()
+                            # remove target from grid
+                            targetCell = nextState.getCellAt(target.getLocation()["x"],
+                                                             target.getLocation()["y"])
+                            targetCell.removeAgent(target)
                     else:
                         # most actions can be handled with a general call like this
                         # specific cases, such as move (shown above), can be handled in their own blocks
