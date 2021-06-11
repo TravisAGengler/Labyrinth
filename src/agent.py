@@ -215,16 +215,16 @@ class Agent(ABC):
         seenCellDirection = [0, 0]
 
         for i in range(self.getSightRange()):
-            if self.getDirection() == self.UP:
+            if self.getDirection() == self.UP and not seenCell.isWallUp():
                 seenCell = seenCell.getCellUp()
                 seenCellDirection[1] -= 1
-            elif self.getDirection() == self.DOWN:
+            elif self.getDirection() == self.DOWN and not seenCell.isWallDown():
                 seenCell = seenCell.getCellDown()
                 seenCellDirection[1] += 1
-            elif self.getDirection() == self.LEFT:
+            elif self.getDirection() == self.LEFT and not seenCell.isWallLeft():
                 seenCell = seenCell.getCellLeft()
                 seenCellDirection[0] -= 1
-            elif self.getDirection() == self.RIGHT:
+            elif self.getDirection() == self.RIGHT and not seenCell.isWallRight():
                 seenCell = seenCell.getCellRight()
                 seenCellDirection[0] += 1
 
