@@ -176,7 +176,7 @@ class Gamestate:
     def __linkCells(self):
         """
         Link all cells together by filling in their neighbor variables
-        Also fill in walls from neighbors where necessary
+        Also fill in walls from neighbors and grid edges where necessary
         """
         for x in range(len(self.__grid)):
             for y in range(len(self.__grid[x])):
@@ -185,20 +185,28 @@ class Gamestate:
                         self.__grid[x + 1][y])
                     if self.__grid[x + 1][y].isWallLeft():
                         self.__grid[x][y].WALL_RIGHT = True
+                else:
+                    self.__grid[x][y].WALL_RIGHT = True
                 if x - 1 >= 0:
                     self.__grid[x][y].setCellLeft(
                         self.__grid[x - 1][y])
                     if self.__grid[x - 1][y].isWallRight():
                         self.__grid[x][y].WALL_LEFT = True
+                else:
+                    self.__grid[x][y].WALL_LEFT = True
                 if y + 1 < self.__height:
                     self.__grid[x][y].setCellDown(
                         self.__grid[x][y + 1])
                     if self.__grid[x][y + 1].isWallUp():
                         self.__grid[x][y].WALL_DOWN = True
+                else:
+                    self.__grid[x][y].WALL_DOWN = True
                 if y - 1 >= 0:
                     self.__grid[x][y].setCellUp(self.__grid[x][y - 1])
                     if self.__grid[x][y - 1].isWallDown():
                         self.__grid[x][y].WALL_UP = True
+                else:
+                    self.__grid[x][y].WALL_UP = True
 
     def getWidth(self):
         return self.__width

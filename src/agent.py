@@ -17,7 +17,7 @@ class Agent(ABC):
         self.__sightRange = sightRange  # how far the agent can see in front of itself
         self.__state = State(memoryLoss=0, width=width, height=height)
         # TODO: possibly change how direction is selected, will depend on how agents are spawned in
-        self.__direction = random.choice(self.DIRECTIONS)
+        self.__direction = self.RIGHT # random.choice(self.DIRECTIONS)
         self.__inventory = []
         self.__isAlive = True
         self.__score = 0
@@ -172,9 +172,10 @@ class Agent(ABC):
         Does not count as an action, as it is always performed every tick
         :param cell:  The cell the agent is currently in
         """
-        # remember cell agent is standing in
+        # remember cell agent is standing in and mark it as traversed
         self.__state.remember(
-            self.getLocation()['x'], self.getLocation()['y'], cell)
+            self.getLocation()['x'], self.getLocation()['y'], cell, beenTo=True)
+
         # remember cells the agent can see in front of itself
         seenCell = cell
         seenCellDirection = [0, 0]  # positive and negative x and y modifiers
@@ -225,16 +226,10 @@ class Agent(ABC):
         Determine if the agent can see another agent
         :return:  List of agents that are seen. Empty if sees none.
         """
+        # TODO: implement this
         seenAgents = []
         return seenAgents
 
-    def knowsSurroundings(self):
-        """
-        Determine if the Agent knows what is in every cell directly surrounding it
-        :return:  True if it knows its surroundings, false if not
-        """
-        # TODO: check if all surrounding cells in state are not None
-        pass
 
     """
     Private Methods
@@ -243,7 +238,7 @@ class Agent(ABC):
     def __getForwards(self):
         """
         Get the coordinates of the cell directly in front of the Agent
-        Does not check if move is legal
+        Does not check if coordinates exist on the grid
         :return:  the coordinates of the cell
         """
         if self.getDirection() == self.UP:
