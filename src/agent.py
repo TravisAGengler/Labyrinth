@@ -17,10 +17,30 @@ class Agent(ABC):
         self.__sightRange = sightRange  # how far the agent can see in front of itself
         self.__state = State(memoryLoss=0, width=width, height=height)
         # TODO: possibly change how direction is selected, will depend on how agents are spawned in
-        self.__direction = self.RIGHT # random.choice(self.DIRECTIONS)
+        self.__direction = self.UP # random.choice(self.DIRECTIONS)
         self.__inventory = []
         self.__isAlive = True
         self.__score = 0
+
+        # map of how to turn based on current direction and desired direction
+        # (agentDirection, desiredDirection): turnFunction
+        self.turnDirections = {
+            (self.UP, self.DOWN): self.turnAround,
+            (self.UP, self.LEFT): self.turnLeft,
+            (self.UP, self.RIGHT): self.turnRight,
+
+            (self.DOWN, self.UP): self.turnAround,
+            (self.DOWN, self.LEFT): self.turnRight,
+            (self.DOWN, self.RIGHT): self.turnLeft,
+
+            (self.LEFT, self.UP): self.turnRight,
+            (self.LEFT, self.DOWN): self.turnLeft,
+            (self.LEFT, self.RIGHT): self.turnAround,
+
+            (self.RIGHT, self.UP): self.turnLeft,
+            (self.RIGHT, self.DOWN): self.turnRight,
+            (self.RIGHT, self.LEFT): self.turnAround
+        }
 
         self.__actions = [self.pickUp, self.die, self.win,
                           self.turnRight, self.turnLeft, self.turnAround, self.move]
