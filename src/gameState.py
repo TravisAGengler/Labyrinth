@@ -12,7 +12,7 @@ class Gamestate:
     This is the representation for the true state of the game, separate from the Agent State (state.py)
     """
 
-    def __init__(self, width, height, layout):
+    def __init__(self, width, height):
         self.__agents = {}
         self.__width = width
         self.__height = height
@@ -23,12 +23,11 @@ class Gamestate:
                 cell = Cell(wallUp=False, wallDown=False,
                             wallLeft=False, wallRight=False)
                 self.__grid[i].append(cell)
-        self.__applyLayout(layout)
+        self.__applyLayout()
         self.__linkCells()
 
-    def __applyLayout(self, layout):
-        # TODO: This is just a proof for rendering. Replace this with something we make from the layout provided
-        # We can place agents and items randomly based on criteria
+    def __applyLayout(self):
+        # Place agents
 
         # Place Civilian at (0, 0)
         self.__agents["civilian"] = Civilian(
@@ -52,12 +51,16 @@ class Gamestate:
         self.__grid[self.__width-1][self.__height -
                                     1].addAgent(self.__agents["monster"])
 
+        # TODO: Place these items randomly in a few pre-selected locations
+
         # Place Research at (1, 1)
         self.__grid[1][1].addItem(Item.research)
         # Place Gun at (1, height-2)
         self.__grid[1][self.__height - 2].addItem(Item.gun)
         # Place Keycard at (width-2, 1)
         self.__grid[self.__width - 2][1].addItem(Item.keyCard)
+
+        # Place walls
 
         # Top row of maze
         self.__grid[0][0].setWalls(True, False, True, True)

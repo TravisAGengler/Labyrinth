@@ -1,6 +1,6 @@
 Labyrinth multiagent system project
 
-TODO
+DONE
 - Framework and fixed environment (3-5 days)
   - Actions
   - Perceps
@@ -9,6 +9,8 @@ TODO
   - Fixed layout
   - Rendering
   - Runs (Serialize and load)
+
+TODO
 - Agent behavior (10-15 days)
   - Monster
   - Soldier

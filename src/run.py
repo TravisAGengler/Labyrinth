@@ -11,19 +11,15 @@ class SimParams:
     This allows us to configure the simulation
     """
 
-    def __init__(self, width: int = 10, height: int = 10, layout=None):
+    def __init__(self, width: int = 10, height: int = 10):
         self.__width = width
         self.__height = height
-        self.__layout = layout
 
     def getWidth(self):
         return self.__width
 
     def getHeight(self):
         return self.__height
-
-    def getLayout(self):
-        return self.__layout
 
 
 class Run:
@@ -45,7 +41,7 @@ class Run:
         roundLimit = 10
         terminated = False
         self.states = [
-            Gamestate(width=params.getWidth(), height=params.getHeight(), layout=params.getLayout())]
+            Gamestate(width=params.getWidth(), height=params.getHeight())]
         while len(self.states) < roundLimit and not terminated:
             nextState = copy.deepcopy(self.states[-1])
 
