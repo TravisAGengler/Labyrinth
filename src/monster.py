@@ -9,6 +9,7 @@ class Monster(Agent):
         super(Monster, self).__init__(
             startingLocation, sightRange, width, height)
         self.addAction(self.kill)
+        self.addAction(self.run)
 
     def getValidActions(self, actions):
         """
@@ -22,6 +23,9 @@ class Monster(Agent):
 
         if self.canMove(cell):
             validMoves.append(self.move)
+
+        # if self.canAttack():
+        #     validMoves.append(self.kill)
 
         return validMoves
 
@@ -63,9 +67,17 @@ class Monster(Agent):
     def kill(self):
         """
         Kill a targeted agent
-        :return:
         """
         pass
+
+    def run(self):
+        """
+        Move two spaces in one action
+        Called when chasing a target that does not seen the monster
+        """
+        self.move()
+        self.move()
+
 
     """
     Private Methods
@@ -80,7 +92,8 @@ class Monster(Agent):
         """
         utility = {
             self.kill: 100,  # monster will always attack when able
-            self.move: 50 if self.seenAgents() != [] else 1,  # prioritize moving towards target  # TODO:  ambush behavior
+            self.run: 0,
+            self.move: 10 if self.seenAgents() != [] else 1,  # prioritize moving towards target  # TODO:  ambush behavior
             self.turnLeft: 0,  # default value
             self.turnRight: 0,
             self.turnAround: 0
@@ -88,6 +101,15 @@ class Monster(Agent):
 
         currentCell = self.getState().getCellAt(self.getLocation()["x"], self.getLocation()["y"])
         surroundings = self.getState().getKnownSurroundings(self.getLocation()["x"], self.getLocation()["y"])
+
+        # ambush behavior
+        targets = self.seenAgents()
+        seen = False
+        for target in targets:
+            if self.__seenBy(target):
+                seen = True
+        if not seen:
+            utility[self.run] = 15
 
         # agent prioritizes learning its surroundings over moving
         # check up
@@ -108,7 +130,7 @@ class Monster(Agent):
         nextCell = surroundings[self.getDirection()]
         nextCellLocation = self.getState().getCellLocation(nextCell)
         if nextCellLocation != None:
-            # TODO: This is awful. Figure out some way to make this less messy
+            # TODO: This is kinda ugly. Figure out some way to make this less messy
             if self.getState().isVisited(nextCellLocation["x"], nextCellLocation["y"]):
                 # check if any neighboring cells are unvisited
                 unvisitedNeighbors = False
@@ -124,7 +146,8 @@ class Monster(Agent):
 
                 if unvisitedNeighbors == False:
                     # TODO: talk about what the agent should do if every cell around them has been visited.
-                    pass
+                    # Right now, the agent simply resets its visited cells
+                    self.getState().resetVisitedCells()
 
 
 
@@ -135,3 +158,21 @@ class Monster(Agent):
         # TODO: figure out how to incorporate actions such as "die". It wants to avoid things that lead to it, but "die" should always override other action choices
 
         return utility[action]
+
+
+    def __seenBy(self, target):
+        """
+        Check if if the monster's target is facing it
+        :param target:  the target agent
+        :return:        True if agent is facing them, False if not
+        """
+        if self.getDirection() == self.UP and target.getDirection() == self.DOWN:
+            return True
+        elif self.getDirection() == self.DOWN and target.getDirection() == self.UP:
+            return True
+        elif self.getDirection() == self.LEFT and target.getDirection() == self.RIGHT:
+            return True
+        elif self.getDirection() == self.RIGHT and target.getDirection() == self.LEFT:
+            return True
+        else:
+            return False

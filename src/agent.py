@@ -17,7 +17,7 @@ class Agent(ABC):
         self.__sightRange = sightRange  # how far the agent can see in front of itself
         self.__state = State(memoryLoss=0, width=width, height=height)
         # TODO: possibly change how direction is selected, will depend on how agents are spawned in
-        self.__direction = self.UP # random.choice(self.DIRECTIONS)
+        self.__direction = random.choice(self.DIRECTIONS)
         self.__inventory = []
         self.__isAlive = True
         self.__score = 0
