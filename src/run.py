@@ -4,6 +4,10 @@ import time
 
 
 from gameState import Gamestate
+from civilian import Civilian
+from soldier import Soldier
+from scientist import Scientist
+from monster import Monster
 
 
 class SimParams:
@@ -48,18 +52,26 @@ class Run:
 
             for agent in nextState.getAgents().values():
                 if agent.isAlive():
-                    agent.observe(nextState.getCellAt(
-                        agent.getLocation()['x'], agent.getLocation()['y']))
+                    agent.observe(nextState.getCellAt(agent.getLocation()['x'],
+                                                      agent.getLocation()['y']))
                     action = agent.chooseAction()
                     if action == agent.move:
                         # remove agent from old cell
-                        nextState.getCellAt(agent.getLocation()[
-                            'x'], agent.getLocation()['y']).removeAgent(agent)
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).removeAgent(agent)
                         # update agent's internal position
                         action()
                         # place agent in new cell
-                        nextState.getCellAt(agent.getLocation()[
-                            'x'], agent.getLocation()['y']).addAgent(agent)
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).addAgent(agent)
+                    elif isinstance(agent, Monster) and action == agent.kill:
+                        targets = action()
+                        for target in targets:
+                            target.die()
+                            # remove target from grid
+                            targetCell = nextState.getCellAt(target.getLocation()["x"],
+                                                             target.getLocation()["y"])
+                            targetCell.removeAgent(target)
                     else:
                         # most actions can be handled with a general call like this
                         # specific cases, such as move (shown above), can be handled in their own blocks

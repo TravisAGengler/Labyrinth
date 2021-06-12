@@ -31,10 +31,11 @@ class State:
         return self.__grid[x][y]
 
     def getCellLocation(self, cell):
-        for x in range(len(self.__grid)):
-            for y in range(len(self.__grid[x])):
-                if self.__grid[x][y] == cell:
-                    return {"x": x, "y": y}
+        if cell != None:
+            for x in range(len(self.__grid)):
+                for y in range(len(self.__grid[x])):
+                    if self.__grid[x][y] == cell:
+                        return {"x": x, "y": y}
         return None
 
     def isVisited(self, x, y):
@@ -62,8 +63,17 @@ class State:
         """
         currentCell = self.getCellAt(x, y)
         return {
-            "up": currentCell.getCellUp() if currentCell.isWallUp() == False else None,
-            "down": currentCell.getCellDown() if currentCell.isWallDown() == False else None,
-            "left": currentCell.getCellLeft() if currentCell.isWallLeft() == False else None,
-            "right": currentCell.getCellRight() if currentCell.isWallRight() == False else None
+            "up": currentCell.getCellUp() if not currentCell.isWallUp() else None,
+            "down": currentCell.getCellDown() if not currentCell.isWallDown() else None,
+            "left": currentCell.getCellLeft() if not currentCell.isWallLeft() else None,
+            "right": currentCell.getCellRight() if not currentCell.isWallRight() else None
         }
+
+    def resetVisitedCells(self):
+        """
+        Mark every cell in the state as unvisited.
+        This functions to allow the agent to continue exploring the labyrinth after exploring all it initially can
+        """
+        for x in range(len(self.__visitedCells)):
+            for y in range(len(self.__visitedCells[x])):
+                self.__visitedCells[x][y] = False

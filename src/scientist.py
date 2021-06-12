@@ -3,9 +3,9 @@ from agent import Agent
 
 class Scientist(Agent):
 
-    def __init__(self, startingLocation, sightRange, width, height):
+    def __init__(self, startingLocation, sightRange, width, height, name):
         super(Scientist, self).__init__(
-            startingLocation, sightRange, width, height)
+            startingLocation, sightRange, width, height, name)
 
     def getValidActions(self, actions):
         """

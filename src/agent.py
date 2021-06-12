@@ -12,15 +12,36 @@ class Agent(ABC):
     RIGHT = "right"
     DIRECTIONS = [UP, DOWN, LEFT, RIGHT]
 
-    def __init__(self, startingLocation, sightRange, width, height):
+    def __init__(self, startingLocation, sightRange, width, height, name):
         self.__location = startingLocation  # {'x': x, 'y', y}
         self.__sightRange = sightRange  # how far the agent can see in front of itself
         self.__state = State(memoryLoss=0, width=width, height=height)
         # TODO: possibly change how direction is selected, will depend on how agents are spawned in
-        self.__direction = self.RIGHT # random.choice(self.DIRECTIONS)
+        self.__direction = random.choice(self.DIRECTIONS)
         self.__inventory = []
         self.__isAlive = True
         self.__score = 0
+        self.__name = name
+
+        # map of how to turn based on current direction and desired direction
+        # (agentDirection, desiredDirection): turnFunction
+        self.turnDirections = {
+            (self.UP, self.DOWN): self.turnAround,
+            (self.UP, self.LEFT): self.turnLeft,
+            (self.UP, self.RIGHT): self.turnRight,
+
+            (self.DOWN, self.UP): self.turnAround,
+            (self.DOWN, self.LEFT): self.turnRight,
+            (self.DOWN, self.RIGHT): self.turnLeft,
+
+            (self.LEFT, self.UP): self.turnRight,
+            (self.LEFT, self.DOWN): self.turnLeft,
+            (self.LEFT, self.RIGHT): self.turnAround,
+
+            (self.RIGHT, self.UP): self.turnLeft,
+            (self.RIGHT, self.DOWN): self.turnRight,
+            (self.RIGHT, self.LEFT): self.turnAround
+        }
 
         self.__actions = [self.pickUp, self.die, self.win,
                           self.turnRight, self.turnLeft, self.turnAround, self.move]
@@ -88,6 +109,9 @@ class Agent(ABC):
 
     def getActions(self):
         return self.__actions
+
+    def getName(self):
+        return self.__name
 
     """
     Setter Methods
@@ -177,33 +201,44 @@ class Agent(ABC):
             self.getLocation()['x'], self.getLocation()['y'], cell, beenTo=True)
 
         # remember cells the agent can see in front of itself
-        seenCell = cell
-        seenCellDirection = [0, 0]  # positive and negative x and y modifiers
+        cells = self.getSeenCells()
+        for seenCell in cells.keys():
+            self.__state.remember(cells[seenCell]["x"], cells[seenCell]["y"], seenCell)
+
+    def getSeenCells(self):
+        """
+        Get the cells the agent can currently see as determined by its sight range
+        :return:  A dict of cells and their {"x": x, "y": y} coordinates
+        """
+        seenCell = self.getState().getCellAt(self.getLocation()["x"], self.getLocation()["y"])
+        seenCells = {}
+        seenCellDirection = [0, 0]
+
         for i in range(self.getSightRange()):
-            if self.getDirection() == self.UP:
+            if self.getDirection() == self.UP and not seenCell.isWallUp():
                 seenCell = seenCell.getCellUp()
                 seenCellDirection[1] -= 1
-            elif self.getDirection() == self.DOWN:
+            elif self.getDirection() == self.DOWN and not seenCell.isWallDown():
                 seenCell = seenCell.getCellDown()
                 seenCellDirection[1] += 1
-            elif self.getDirection() == self.LEFT:
+            elif self.getDirection() == self.LEFT and not seenCell.isWallLeft():
                 seenCell = seenCell.getCellLeft()
                 seenCellDirection[0] -= 1
-            elif self.getDirection() == self.RIGHT:
+            elif self.getDirection() == self.RIGHT and not seenCell.isWallRight():
                 seenCell = seenCell.getCellRight()
                 seenCellDirection[0] += 1
 
-            if seenCell == None:  # reached end of grid
+            if seenCell == None:  # reached the end of grid
                 break
             else:
                 try:
-                    self.__state.remember(self.getLocation()['x'] + seenCellDirection[0],
-                                          self.getLocation()[
-                        'y'] + seenCellDirection[1],
-                        seenCell)
+                    seenCells[seenCell] = {"x": self.getLocation()["x"] + seenCellDirection[0],
+                                           "y": self.getLocation()["y"] + seenCellDirection[1]}
                 except Exception as err:
                     print(seenCell)
                     raise(err)
+
+        return seenCells
 
     def canMove(self, cell):
         """
@@ -226,8 +261,11 @@ class Agent(ABC):
         Determine if the agent can see another agent
         :return:  List of agents that are seen. Empty if sees none.
         """
-        # TODO: implement this
         seenAgents = []
+        seenCells = self.getSeenCells()
+        for cell in seenCells.keys():
+            for agent in cell.getAgentList():
+                seenAgents.append(agent)
         return seenAgents
 
 
