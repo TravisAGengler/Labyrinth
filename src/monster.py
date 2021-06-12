@@ -39,6 +39,8 @@ class Monster(Agent):
         currentCell = self.getState().getCellAt(self.getLocation()["x"], self.getLocation()["y"])
         surroundings = self.getState().getKnownSurroundings(self.getLocation()["x"], self.getLocation()["y"])
 
+        # TODO: currently, the agent always turns Left at an intersection unless he's already been that way. Talk about possibly changing this. Introduce some degree of randomization?
+
         # print()
         # print("AGENT AT " + str(self.getLocation()))
         # print("UP: " + str(self.getState().getCellLocation(surroundings[self.UP])))
@@ -58,7 +60,18 @@ class Monster(Agent):
         for action in validActions:
             actionUtility[action] = self._getUtility(action, self.getState())
 
-        return max(actionUtility, key=actionUtility.get)
+        # TODO: discuss with group and choose between these two methods
+
+        # if multiple actions tie for best utility, pick the first option
+        # return max(actionUtility, key=actionUtility.get)
+
+        # if multiple actions tie for best utility, pick randomly between them
+        maxUtility = actionUtility[max(actionUtility, key=actionUtility.get)]
+        maxActions = []
+        for action in actionUtility.keys():
+            if actionUtility[action] == maxUtility:
+                maxActions.append(action)
+        return random.choice(maxActions)
 
     """
     Actions
@@ -157,14 +170,6 @@ class Monster(Agent):
                     # TODO: talk about what the agent should do if every cell around them has been visited.
                     # Right now, the agent simply resets its visited cells
                     self.getState().resetVisitedCells()
-
-
-
-
-
-
-
-        # TODO: figure out how to incorporate actions such as "die". It wants to avoid things that lead to it, but "die" should always override other action choices
 
         return utility[action]
 
