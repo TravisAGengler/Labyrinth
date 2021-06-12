@@ -91,6 +91,59 @@ class Run:
                             nextState.getCellAt(agent.getLocation()['x'],
                                                 agent.getLocation()['y']).removeItem(item)
                             # print(f"{agentName} picked up {item}")
+                    elif not isinstance(agent, Monster) and action == agent.shoot:
+                        # See if the agent shot anyone
+                        action()  # All this does is remove gun after use from inventory
+                        # TRICKY: Hit checking needs to be handled at this level, since this is the true layout
+                        agentPos = agent.getLocation()
+                        d = agent.getDirection()
+                        bulletPath = [agentPos]
+                        if d == agent.UP:
+                            wall = "WALL_UP"
+                            def inLims(p): return p['y'] > 0
+                            def transform(p): return {
+                                'x': p['x'], 'y': p['y'] - 1}
+                        elif d == agent.RIGHT:
+                            wall = "WALL_RIGHT"
+                            def inLims(p): return p['x'] < nextState.getWidth()
+
+                            def transform(p): return {
+                                'x': p['x'] + 1, 'y': p['y']}
+                        elif d == agent.DOWN:
+                            wall = "WALL_DOWN"
+
+                            def inLims(
+                                p): return p['y'] < nextState.getHeight()
+                            def transform(p): return {
+                                'x': p['x'], 'y': p['y'] + 1}
+                        elif d == agent.LEFT:
+                            wall = "WALL_LEFT"
+                            def inLims(p): return p['x'] > 0
+                            def transform(p): return {
+                                'x': p['x'] - 1, 'y': p['y']}
+
+                        bulletCell = nextState.getCellAt(
+                            bulletPath[-1]['x'], bulletPath[-1]['y'])
+                        while not getattr(bulletCell, wall) and inLims(bulletPath[-1]):
+                            bulletPath.append(transform(bulletPath[-1]))
+                            bulletCell = nextState.getCellAt(
+                                bulletPath[-1]['x'], bulletPath[-1]['y'])
+
+                        # This is a trick to make sure we dont shoot through walls, and also ourselves!
+                        bulletPath = [p for p in bulletPath if p != agentPos]
+
+                        for p in bulletPath:
+                            targets = nextState.getCellAt(
+                                p['x'], p['y']).getAgentList()
+                            if len(targets):
+                                # Just kill the first thing
+                                target = targets[0]
+                                targetCell = nextState.getCellAt(target.getLocation()["x"],
+                                                                 target.getLocation()["y"])
+                                nextState.removeAgent(target)
+                                targetCell.removeAgent(target)
+                                print(
+                                    f"{type(target).__name__} was killed by a bullet from {type(agent).__name__}")
                     else:
                         action()
 
@@ -104,7 +157,7 @@ class Run:
             if not hasMonster:
                 print("Humans win!")
                 terminated = True
-            if len(self.states) >= roundLimit:
+            if len(self.states) + 1 >= roundLimit:
                 print(f"No winner after reaching round limit")
                 terminated = True
 

@@ -1,6 +1,8 @@
 import random
 
 from agent import Agent
+from item import Item
+from monster import Monster
 
 
 class Civilian(Agent):
@@ -22,8 +24,11 @@ class Civilian(Agent):
         if self.canMove(cell):
             validActions.append(self.move)
 
-        if len(cell.getItemList()) > 0:
+        if len(cell.getItemList()):
             validActions.append(self.pickUp)
+
+        if Item.gun in self.getInventory():
+            validActions.append(self.shoot)
 
         return validActions
 
@@ -58,6 +63,13 @@ class Civilian(Agent):
     Actions
     """
 
+    def shoot(self):
+        """
+        Shoot gun in a direction
+        :return:
+        """
+        self.removeItem(Item.gun)
+
     """
     Private Methods
     """
@@ -74,7 +86,8 @@ class Civilian(Agent):
             self.turnLeft: 0,  # default value
             self.turnRight: 0,
             self.turnAround: 0,
-            self.pickUp: 0
+            self.pickUp: 0,
+            self.shoot: 0
         }
 
         currentCell = self.getState().getCellAt(
@@ -82,8 +95,17 @@ class Civilian(Agent):
         surroundings = self.getState().getKnownSurroundings(
             self.getLocation()["x"], self.getLocation()["y"])
 
+        # If agent has a gun, and agent sees (and is facing) the monster, prioritize shooting
+        if Item.gun in self.getInventory():
+            targets = self.seenAgents()
+            for target in targets:
+                if isinstance(target, Monster):
+                    utility[self.shoot] = 30
+
         # agent will prioritize picking up items
-        if len(currentCell.getItemList()):
+        itemsNotHeld = [
+            i for i in currentCell.getItemList() if i not in self.getInventory()]
+        if len(itemsNotHeld):
             utility[self.pickUp] = 20
 
         # agent prioritizes learning its surroundings over moving

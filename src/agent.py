@@ -126,6 +126,9 @@ class Agent(ABC):
     def addAction(self, action):
         self.__actions.append(action)
 
+    def removeItem(self, item):
+        self.__inventory = [i for i in self.__inventory if i != item]
+
     """
     Actions
     """
@@ -203,14 +206,16 @@ class Agent(ABC):
         # remember cells the agent can see in front of itself
         cells = self.getSeenCells()
         for seenCell in cells.keys():
-            self.__state.remember(cells[seenCell]["x"], cells[seenCell]["y"], seenCell)
+            self.__state.remember(
+                cells[seenCell]["x"], cells[seenCell]["y"], seenCell)
 
     def getSeenCells(self):
         """
         Get the cells the agent can currently see as determined by its sight range
         :return:  A dict of cells and their {"x": x, "y": y} coordinates
         """
-        seenCell = self.getState().getCellAt(self.getLocation()["x"], self.getLocation()["y"])
+        seenCell = self.getState().getCellAt(
+            self.getLocation()["x"], self.getLocation()["y"])
         seenCells = {}
         seenCellDirection = [0, 0]
 
@@ -267,7 +272,6 @@ class Agent(ABC):
             for agent in cell.getAgentList():
                 seenAgents.append(agent)
         return seenAgents
-
 
     """
     Private Methods

@@ -81,15 +81,15 @@ class Renderer:
         color = COLOR_DARKGRAY
         xr, yr = (x * self.__cellWidth, y * self.__cellHeight)
         if item == Item.keyCard:
-            color = COLOR_DARKGREEN
+            color = COLOR_DARKBLUE
             xr = xr
             yr = yr
         if item == Item.gun:
-            color = COLOR_YELLOW
+            color = COLOR_DARKGREEN
             xr = xr + self.__cellWidth // 2
             yr = yr
         if item == Item.research:
-            color = COLOR_DARKBLUE
+            color = COLOR_YELLOW
             xr = xr
             yr = yr + self.__cellHeight // 2
         # TODO: When we get images, draw the image instead.
