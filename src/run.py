@@ -55,6 +55,7 @@ class Run:
                     agent.observe(nextState.getCellAt(agent.getLocation()['x'],
                                                       agent.getLocation()['y']))
                     action = agent.chooseAction()
+                    # handle actions all agents can make
                     if action == agent.move:
                         # remove agent from old cell
                         nextState.getCellAt(agent.getLocation()['x'],
@@ -64,6 +65,7 @@ class Run:
                         # place agent in new cell
                         nextState.getCellAt(agent.getLocation()['x'],
                                             agent.getLocation()['y']).addAgent(agent)
+                    # handle monster actions
                     elif isinstance(agent, Monster) and action == agent.kill:
                         targets = action()
                         for target in targets:
@@ -72,9 +74,13 @@ class Run:
                             targetCell = nextState.getCellAt(target.getLocation()["x"],
                                                              target.getLocation()["y"])
                             targetCell.removeAgent(target)
+                    elif isinstance(agent, Monster) and action == agent.run:
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).removeAgent(agent)
+                        action()
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).addAgent(agent)
                     else:
-                        # most actions can be handled with a general call like this
-                        # specific cases, such as move (shown above), can be handled in their own blocks
                         action()
 
             self.states.append(nextState)
