@@ -219,3 +219,7 @@ class Gamestate:
 
     def getAgents(self):
         return self.__agents
+
+    def removeAgent(self, agent):
+        self.__agents = {an: a for an,
+                         a in self.__agents.items() if a != agent}

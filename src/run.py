@@ -40,17 +40,14 @@ class Run:
         self.current_state = 0
 
     def __simulateRun(self, params: SimParams):
-        # TODO: Just generate the first 10 steps for now.
-        # TODO: Add termination criteria later (No remaining humans, or humans escaped)
         roundLimit = 200
         terminated = False
         self.states = [
             Gamestate(width=params.getWidth(), height=params.getHeight())]
-        while len(self.states) < roundLimit and not terminated:
-            # print(f"State: {len(self.states)}")
+        while not terminated:
             nextState = copy.deepcopy(self.states[-1])
 
-            for agent in nextState.getAgents().values():
+            for agentName, agent in nextState.getAgents().items():
                 if agent.isAlive():
                     agent.observe(nextState.getCellAt(agent.getLocation()['x'],
                                                       agent.getLocation()['y']))
@@ -69,19 +66,47 @@ class Run:
                     elif isinstance(agent, Monster) and action == agent.kill:
                         targets = action()
                         for target in targets:
-                            target.die()
+                            itemsDropped = target.die()
                             # remove target from grid
                             targetCell = nextState.getCellAt(target.getLocation()["x"],
                                                              target.getLocation()["y"])
+                            nextState.removeAgent(target)
                             targetCell.removeAgent(target)
+                            # Drop items in cell
+                            for i in itemsDropped:
+                                # print(f"{target} dropped {i} on death")
+                                targetCell.addItem(i)
                     elif isinstance(agent, Monster) and action == agent.run:
                         nextState.getCellAt(agent.getLocation()['x'],
                                             agent.getLocation()['y']).removeAgent(agent)
                         action()
                         nextState.getCellAt(agent.getLocation()['x'],
                                             agent.getLocation()['y']).addAgent(agent)
+                    elif action == agent.pickUp:
+                        items = nextState.getCellAt(
+                            agent.getLocation()['x'], agent.getLocation()['y']).getItemList()
+                        if len(items):
+                            item = items[0]
+                            action(item)
+                            nextState.getCellAt(agent.getLocation()['x'],
+                                                agent.getLocation()['y']).removeItem(item)
+                            # print(f"{agentName} picked up {item}")
                     else:
                         action()
+
+            hasMonster = len([a for a in nextState.getAgents().values()
+                             if isinstance(a, Monster)]) > 0
+            hasCivilians = len([a for a in nextState.getAgents().values()
+                                if not isinstance(a, Monster)]) > 0
+            if not hasCivilians:
+                print("Monster wins!")
+                terminated = True
+            if not hasMonster:
+                print("Humans win!")
+                terminated = True
+            if len(self.states) >= roundLimit:
+                print(f"No winner after reaching round limit")
+                terminated = True
 
             self.states.append(nextState)
 

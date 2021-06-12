@@ -77,7 +77,7 @@ class Cell:
 
     def removeItem(self, item):
         try:
-            self.agentList.remove(item)
+            self.itemList.remove(item)
         except ValueError:
             print('The item is not in the cell')
             return False
