@@ -11,6 +11,8 @@ class InputEvent(Enum):
     newRun = 3
     saveRun = 4
     terminate = 5
+    autoStep = 6
+    restart = 7
 
 
 DEFAULT_INPUT_MAPPING = {
@@ -18,7 +20,9 @@ DEFAULT_INPUT_MAPPING = {
     K_RIGHT: InputEvent.nextState,
     K_LEFT: InputEvent.prevState,
     K_s: InputEvent.saveRun,
-    K_n: InputEvent.newRun}
+    K_n: InputEvent.newRun,
+    K_a: InputEvent.autoStep,
+    K_r: InputEvent.restart}
 
 
 class InputManager:

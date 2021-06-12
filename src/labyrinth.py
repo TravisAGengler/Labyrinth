@@ -37,9 +37,9 @@ def main():
     inputManager = InputManager()
     agents = run.getState().getAgents()
 
-    # # let the agents initially observe the environment
-    # for agent in agents.values():
-    #     agent.observe(run.getState().getCellAt(agent.getLocation()['x'], agent.getLocation()['y']))
+    autoStep = False
+    audoStepRate = 25
+    autoStepTicks = pygame.time.get_ticks()
 
     while True:
         event = inputManager.getInputEvent()
@@ -53,24 +53,16 @@ def main():
             run.toFile()
         elif event == InputEvent.newRun:
             run = Run(simParams=simParams)
+        elif event == InputEvent.autoStep:
+            autoStep = not autoStep
+        elif event == InputEvent.restart:
+            run.restart()
+
+        if autoStep and pygame.time.get_ticks()-autoStepTicks >= audoStepRate:
+            run.stepForward()
+            autoStepTicks = pygame.time.get_ticks()
+
         renderer.draw(run.getState())
-
-
-        # for agent in agents.values():
-        #     if agent.isAlive():
-        #         agent.observe(run.getState().getCellAt(agent.getLocation()['x'], agent.getLocation()['y']))
-        #         action = agent.chooseAction()
-        #         if action == agent.move:
-        #             # remove agent from old cell
-        #             run.getState().getCellAt(agent.getLocation()['x'], agent.getLocation()['y']).removeAgent(agent)
-        #             # update agent's internal position
-        #             action()
-        #             # place agent in new cell
-        #             run.getState().getCellAt(agent.getLocation()['x'], agent.getLocation()['y']).addAgent(agent)
-        #         else:
-        #             # most actions can be handled with a general call like this
-        #             # specific cases, such as move (shown above), can be handled in their own blocks
-        #             action()
 
 
 if __name__ == '__main__':

@@ -38,16 +38,15 @@ class Run:
     def __simulateRun(self, params: SimParams):
         # TODO: Just generate the first 10 steps for now.
         # TODO: Add termination criteria later (No remaining humans, or humans escaped)
-        roundLimit = 10
+        roundLimit = 200
         terminated = False
         self.states = [
             Gamestate(width=params.getWidth(), height=params.getHeight())]
         while len(self.states) < roundLimit and not terminated:
+            # print(f"State: {len(self.states)}")
             nextState = copy.deepcopy(self.states[-1])
 
             for agent in nextState.getAgents().values():
-                agent.observe(nextState.getCellAt(
-                    agent.getLocation()['x'], agent.getLocation()['y']))
                 if agent.isAlive():
                     agent.observe(nextState.getCellAt(
                         agent.getLocation()['x'], agent.getLocation()['y']))
@@ -81,12 +80,18 @@ class Run:
     def stepForward(self):
         if self.current_state < len(self.states) - 1:
             self.current_state += 1
-        print(f"Viewing state ({self.current_state + 1}/{len(self.states)})")
-        # TODO: Perhaps add some kind of action log here? Would make debugging/explaining easier
+            print(
+                f"Viewing state ({self.current_state + 1}/{len(self.states)})")
+            # TODO: Perhaps add some kind of action log here? Would make debugging/explaining easier
 
     def stepBack(self):
         if self.current_state > 0:
             self.current_state -= 1
+            print(
+                f"Viewing state ({self.current_state + 1}/{len(self.states)})")
+
+    def restart(self):
+        self.current_state = 0
         print(f"Viewing state ({self.current_state + 1}/{len(self.states)})")
 
     def getState(self) -> Gamestate:

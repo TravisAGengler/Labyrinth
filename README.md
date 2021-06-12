@@ -20,6 +20,15 @@ TODO
   - Recordings
   - Presentation slides
 
+Controls:
+- `esc`: Close program
+- `n`: New Run
+- `a`: Auto-advance states
+- `r`: Rewind to begining
+- `s`: Save run
+- `right arrow`: Next state
+- `left arrow`: Previous state
+
 Generating Runs:
 - By default, when you run `labyrinth.py`, a Run will be generated. Press "n" to generate a new Run at any time
 - Step forward through a run by pressing "right" and backward by pressing "left"
