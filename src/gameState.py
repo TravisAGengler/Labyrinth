@@ -29,6 +29,13 @@ class Gamestate:
     def __applyLayout(self):
         # Place agents
 
+        # TRICKY: With the way things are now, the order here determines move priority
+        # Place Monster at (width-1, height-1)
+        self.__agents["monster"] = Monster(
+            startingLocation={'x': self.__width-1, 'y': self.__height-1},
+            sightRange=3, width=self.__width, height=self.__height, name="monster")
+        self.__grid[self.__width-1][self.__height -
+                                    1].addAgent(self.__agents["monster"])
         # Place Civilian at (0, 0)
         self.__agents["civilian"] = Civilian(
             startingLocation={'x': 0, 'y': 0},
@@ -44,12 +51,6 @@ class Gamestate:
             startingLocation={'x': 0, 'y': self.__height-1},
             sightRange=3, width=self.__width, height=self.__height, name="scientist")
         self.__grid[0][self.__height - 1].addAgent(self.__agents["scientist"])
-        # Place Monster at (width-1, height-1)
-        self.__agents["monster"] = Monster(
-            startingLocation={'x': self.__width-1, 'y': self.__height-1},
-            sightRange=3, width=self.__width, height=self.__height, name="monster")
-        self.__grid[self.__width-1][self.__height -
-                                    1].addAgent(self.__agents["monster"])
 
         # TODO: Place these items randomly in a few pre-selected locations
 

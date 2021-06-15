@@ -36,8 +36,10 @@ class Monster(Agent):
         """
         actionUtility = {}
 
-        currentCell = self.getState().getCellAt(self.getLocation()["x"], self.getLocation()["y"])
-        surroundings = self.getState().getKnownSurroundings(self.getLocation()["x"], self.getLocation()["y"])
+        currentCell = self.getState().getCellAt(
+            self.getLocation()["x"], self.getLocation()["y"])
+        surroundings = self.getState().getKnownSurroundings(
+            self.getLocation()["x"], self.getLocation()["y"])
 
         # TODO: currently, the agent always turns Left at an intersection unless he's already been that way. Talk about possibly changing this. Introduce some degree of randomization?
 
@@ -82,7 +84,8 @@ class Monster(Agent):
         Kill targeted agent(s)
         :return:  The agent that was killed
         """
-        currentCell = self.getState().getCellAt(self.getLocation()["x"], self.getLocation()["y"])
+        currentCell = self.getState().getCellAt(
+            self.getLocation()["x"], self.getLocation()["y"])
         agents = currentCell.getAgentList()
         targets = []
         for agent in agents:
@@ -100,7 +103,6 @@ class Monster(Agent):
         self.move()
         self.move()
 
-
     """
     Private Methods
     """
@@ -115,14 +117,17 @@ class Monster(Agent):
         utility = {
             self.kill: 100,  # monster will always attack when able
             self.run: 0,
-            self.move: 10 if self.seenAgents() != [] else 1,  # prioritize moving towards target  # TODO:  ambush behavior
+            # prioritize moving towards target  # TODO:  ambush behavior
+            self.move: 10 if self.seenAgents() != [] else 1,
             self.turnLeft: 0,  # default value
             self.turnRight: 0,
             self.turnAround: 0
         }
 
-        currentCell = self.getState().getCellAt(self.getLocation()["x"], self.getLocation()["y"])
-        surroundings = self.getState().getKnownSurroundings(self.getLocation()["x"], self.getLocation()["y"])
+        currentCell = self.getState().getCellAt(
+            self.getLocation()["x"], self.getLocation()["y"])
+        surroundings = self.getState().getKnownSurroundings(
+            self.getLocation()["x"], self.getLocation()["y"])
 
         # ambush behavior
         targets = self.seenAgents()
@@ -147,7 +152,6 @@ class Monster(Agent):
         if self.getState().getCellLocation(surroundings[self.RIGHT]) == None and not currentCell.isWallRight():
             utility[self.turnDirections[(self.getDirection(), self.RIGHT)]] = 2
 
-
         # agent tries to not retread ground
         nextCell = surroundings[self.getDirection()]
         nextCellLocation = self.getState().getCellLocation(nextCell)
@@ -158,13 +162,14 @@ class Monster(Agent):
                 unvisitedNeighbors = False
                 for direction in self.DIRECTIONS:
                     if direction != self.getDirection():
-                        location = self.getState().getCellLocation(surroundings[direction])
+                        location = self.getState().getCellLocation(
+                            surroundings[direction])
                         if location != None:
                             if not self.getState().isVisited(location["x"], location["y"]):
                                 # turn towards cell
                                 unvisitedNeighbors = True
-                                utility[self.turnDirections[(self.getDirection(), direction)]] = 3
-
+                                utility[self.turnDirections[(
+                                    self.getDirection(), direction)]] = 3
 
                 if unvisitedNeighbors == False:
                     # TODO: talk about what the agent should do if every cell around them has been visited.
@@ -172,7 +177,6 @@ class Monster(Agent):
                     self.getState().resetVisitedCells()
 
         return utility[action]
-
 
     def __seenBy(self, target):
         """
@@ -192,6 +196,23 @@ class Monster(Agent):
             return False
 
     def __canAttack(self):
-        currentCell = self.getState().getCellAt(self.getLocation()["x"], self.getLocation()["y"])
-        if currentCell.getAgentList() != [self]:
+        currentCell = self.getState().getCellAt(
+            self.getLocation()["x"], self.getLocation()["y"])
+
+        # Also allow the monster to attack agents in the cell in front of it.
+        frontCell = None
+        if self.getDirection() == self.UP and not currentCell.isWallUp():
+            frontCell = self.getState().getCellAt(
+                self.getLocation()["x"], self.getLocation()["y"] - 1)
+        if self.getDirection() == self.DOWN and not currentCell.isWallDown():
+            frontCell = self.getState().getCellAt(
+                self.getLocation()["x"], self.getLocation()["y"] + 1)
+        if self.getDirection() == self.LEFT and not currentCell.isWallLeft():
+            frontCell = self.getState().getCellAt(
+                self.getLocation()["x"] - 1, self.getLocation()["y"])
+        if self.getDirection() == self.RIGHT and not currentCell.isWallRight():
+            frontCell = self.getState().getCellAt(
+                self.getLocation()["x"] + 1, self.getLocation()["y"])
+
+        if currentCell.getAgentList() != [self] or (frontCell and len(frontCell.getAgentList())):
             return True

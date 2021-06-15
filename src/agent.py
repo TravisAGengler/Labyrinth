@@ -271,7 +271,8 @@ class Agent(ABC):
         for cell in seenCells.keys():
             for agent in cell.getAgentList():
                 seenAgents.append(agent)
-        return seenAgents
+        seenNotSelf = [a for a in seenAgents if a != self]
+        return seenNotSelf
 
     """
     Private Methods

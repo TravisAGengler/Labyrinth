@@ -28,7 +28,7 @@ class Scientist(Agent):
         if len(cell.getItemList()):
             validActions.append(self.pickUp)
 
-        if Item.gun in self.getInventory():
+        if Item.gun in self.getInventory() and self.seenAgents():
             validActions.append(self.shoot)
 
         return validActions
