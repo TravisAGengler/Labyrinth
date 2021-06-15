@@ -181,7 +181,6 @@ class Agent(ABC):
         """
         self.__location = self.__getForwards()
         if self.isRememberingPath():
-            print(self.__name + " has found the exit and is remembering the path to it")
             self.getState().getActiveBreadTrail().addPoint(self.getLocation()["x"],
                                                            self.getLocation()["y"])
         return self.__location

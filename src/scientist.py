@@ -130,15 +130,17 @@ class Scientist(Agent):
 
         # agent will head back for the exit when it has the key and knows where the exit is
         if Item.keyCard in self.getInventory() and self.isRememberingPath():
-            print(self.getName() + " is retracing it's steps to the exit")
             nextCellLocation = self.getState().getActiveBreadTrail().getNextStep(self.getLocation()["x"],
                                                                                  self.getLocation()["y"])
-            nextCell = self.getState().getCellAt(nextCellLocation["x"], nextCellLocation["y"])
-            nextCellDirection = list(surroundings.keys())[list(surroundings.values()).index(nextCell)]  # get key of value in dict
-            if nextCellDirection == self.getDirection():
-                utility[self.move] = 10
+            if nextCellLocation == None:
+                self.getState().finishBreadTrail()
             else:
-                utility[self.turnDirections[(self.getDirection(), nextCellDirection)]] = 10
+                nextCell = self.getState().getCellAt(nextCellLocation["x"], nextCellLocation["y"])
+                nextCellDirection = list(surroundings.keys())[list(surroundings.values()).index(nextCell)]  # get key of value in dict
+                if nextCellDirection == self.getDirection():
+                    utility[self.move] = 10
+                else:
+                    utility[self.turnDirections[(self.getDirection(), nextCellDirection)]] = 10
 
 
 

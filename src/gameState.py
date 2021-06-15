@@ -80,7 +80,7 @@ class Gamestate:
                  111237,
                  666999]
 
-        random.seed(seeds[4])
+        random.seed(seeds[3])
         exitNum = random.randint(0, 2)
         researchNum = random.randint(0, 4)
         gunNum = random.randint(0, 4)
