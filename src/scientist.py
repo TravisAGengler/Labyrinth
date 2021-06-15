@@ -31,6 +31,9 @@ class Scientist(Agent):
         if Item.gun in self.getInventory() and self.seenAgents():
             validActions.append(self.shoot)
 
+        if Item.keyCard in self.getInventory() and cell.isExit:
+            validActions.append(self.win)
+
         return validActions
 
     def chooseAction(self):
@@ -83,7 +86,7 @@ class Scientist(Agent):
         :return:          the numerical utility of the action
         """
         utility = {
-            self.move: 10,
+            self.move: 1,
             self.turnLeft: 0,  # default value
             self.turnRight: 0,
             self.turnAround: 0,
@@ -108,6 +111,36 @@ class Scientist(Agent):
             i for i in currentCell.getItemList() if i not in self.getInventory()]
         if len(itemsNotHeld):
             utility[self.pickUp] = 20
+
+        # agent will prioritize moving towards items
+        if len(self.seenItems()) != 0:
+            utility[self.move] = 10
+
+        # agent will move towards exit when it sees it and has the key
+        if self.seesExit() and Item.keyCard in self.getInventory():
+            utility[self.move] = 15
+
+        # agent will exit when it has the key
+        if currentCell.isExit:
+            if Item.keyCard in self.getInventory():
+                utility[self.win] = 50
+            # agent will remember where it saw the exit if it cannot immediately exit
+            else:
+                self.getState().addBreadTrail(self.getLocation()["x"], self.getLocation()["y"])
+
+        # agent will head back for the exit when it has the key and knows where the exit is
+        if Item.keyCard in self.getInventory() and self.isRememberingPath():
+            print(self.getName() + " is retracing it's steps to the exit")
+            nextCellLocation = self.getState().getActiveBreadTrail().getNextStep(self.getLocation()["x"],
+                                                                                 self.getLocation()["y"])
+            nextCell = self.getState().getCellAt(nextCellLocation["x"], nextCellLocation["y"])
+            nextCellDirection = list(surroundings.keys())[list(surroundings.values()).index(nextCell)]  # get key of value in dict
+            if nextCellDirection == self.getDirection():
+                utility[self.move] = 10
+            else:
+                utility[self.turnDirections[(self.getDirection(), nextCellDirection)]] = 10
+
+
 
         # agent prioritizes learning its surroundings over moving
         # check up

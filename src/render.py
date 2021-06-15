@@ -12,16 +12,17 @@ from monster import Monster
 from scientist import Scientist
 from soldier import Soldier
 
-COLOR_WHITE = (255, 255, 255)
-COLOR_BLACK = (0,   0,   0)
-COLOR_RED = (255,   0,   0)
-COLOR_GREEN = (0, 255,   0)
-COLOR_ORANGE = (255, 165,   0)
-COLOR_DARKGREEN = (0, 155,   0)
-COLOR_DARKGRAY = (40,  40,  40)
-COLOR_BLUE = (0,   0, 255)
-COLOR_DARKBLUE = (0,   0, 155)
-COLOR_YELLOW = (255, 255,   0)
+COLOR_WHITE =     (255, 255, 255)
+COLOR_BLACK =     (0,     0,   0)
+COLOR_RED =       (255,   0,   0)
+COLOR_GREEN =     (0,   255,   0)
+COLOR_ORANGE =    (255, 165,   0)
+COLOR_DARKGREEN = (0,   155,   0)
+COLOR_DARKGRAY =  (40,   40,  40)
+COLOR_BLUE =      (0,     0, 255)
+COLOR_DARKBLUE =  (0,     0, 155)
+COLOR_YELLOW =    (255,  255,  0)
+COLOR_PINK =      (255,  43, 227)
 
 
 class Renderer:
@@ -136,11 +137,20 @@ class Renderer:
         if walls['left']:
             self.__drawLine(xr, yr, xr, yr + self.__cellHeight, color)
 
+    def __drawExit(self, x: int, y: int):
+        color = COLOR_PINK
+        xr, yr = (x * self.__cellWidth, y * self.__cellHeight)
+        self.__drawRect(xr, yr, self.__cellWidth // 2,
+                        self.__cellHeight // 2, color)
+
+
     def __drawCell(self, x: int, y: int, cell: Cell):
         for item in cell.getItemList():
             self.__drawItem(x, y, item)
         for agent in cell.getAgentList():
             self.__drawAgent(x, y, agent)
+        if cell.isExit:
+            self.__drawExit(x, y)
         self.__drawWalls(x, y, {"up": cell.isWallUp(),
                                 "right": cell.isWallRight(),
                                 "down": cell.isWallDown(),

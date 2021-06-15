@@ -147,7 +147,7 @@ class Agent(ABC):
         return inventory
 
     def win(self):
-        pass  # TODO: implement
+        print(self.__name + " wins!")
 
     def turnRight(self):
         if self.getDirection() == self.RIGHT:
@@ -180,6 +180,10 @@ class Agent(ABC):
         :return:      the new cell the Agent moved to
         """
         self.__location = self.__getForwards()
+        if self.isRememberingPath():
+            print(self.__name + " has found the exit and is remembering the path to it")
+            self.getState().getActiveBreadTrail().addPoint(self.getLocation()["x"],
+                                                           self.getLocation()["y"])
         return self.__location
 
     def doNothing(self):
@@ -188,6 +192,7 @@ class Agent(ABC):
         This is for debugging and fail-safe purposes, and should never happen in a real run
         """
         return
+
 
     """
     Misc
@@ -273,6 +278,36 @@ class Agent(ABC):
                 seenAgents.append(agent)
         seenNotSelf = [a for a in seenAgents if a != self]
         return seenNotSelf
+
+    def seenItems(self):
+        """
+        Determine if the agent can see an item
+        :return:  List of items that are seen. Empty if sees none.
+        """
+        seenItems = []
+        seenCells = self.getSeenCells()
+        for cell in seenCells.keys():
+            for item in cell.getItemList():
+                seenItems.append(item)
+        return seenItems
+
+    def seesExit(self):
+        """
+        Determine if the agent can see the exit
+        :return:  True if it sees the exit, False if not
+        """
+        seenCells = self.getSeenCells()
+        for cell in seenCells.keys():
+            if cell.isExit:
+                return True
+        return False
+
+    def isRememberingPath(self):
+        """
+        Check if the Agent is remembering a path as it moves
+        :return:  True if agent is leaving a BreadTrail, False if not
+        """
+        return len(self.getState().getBreadTrails()) != 0
 
     """
     Private Methods
