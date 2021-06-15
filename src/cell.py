@@ -12,6 +12,7 @@ class Cell:
         self.cellLeft = None
         self.itemList = []
         self.agentList = []
+        self.isExit = False
 
     def setWalls(self, up, down, left, right):
         self.WALL_UP = up
@@ -42,6 +43,9 @@ class Cell:
 
     def setCellRight(self, cell):
         self.cellRight = cell
+
+    def setIsExit(self, boolean):
+        self.isExit = boolean
 
     def getCellUp(self):
         return self.cellUp
