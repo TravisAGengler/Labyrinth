@@ -9,7 +9,7 @@ class Scientist(Agent):
 
     def __init__(self, startingLocation, sightRange, width, height, name, seed=None):
         super(Scientist, self).__init__(
-            startingLocation, sightRange, width, height, name)
+            startingLocation, sightRange, width, height, name, seed)
         self.pickUp(Item.keyCard)
 
     def getValidActions(self, actions):

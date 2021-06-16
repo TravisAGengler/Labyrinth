@@ -28,6 +28,11 @@ class Gamestate:
         self.__linkCells()
 
     def __applyLayout(self):
+        ITEM_SEED_INDEX = 2
+        MONSTER_SEED_INDEX = 3
+        CIVILIAN_SEED_INDEX = 2
+        SOLDIER_SEED_INDEX = 1
+        SCIENTIST_SEED_INDEX = 0
 
         seeds = [365241,
                  543210,
@@ -35,7 +40,7 @@ class Gamestate:
                  111237,
                  666999]
 
-        random.seed(seeds[3])
+        random.seed(seeds[ITEM_SEED_INDEX])
 
         # Place agents
 
@@ -43,23 +48,29 @@ class Gamestate:
         # Place Monster at (width-1, height-1)
         self.__agents["monster"] = Monster(
             startingLocation={'x': self.__width-1, 'y': self.__height-1},
-            sightRange=3, width=self.__width, height=self.__height, name="monster", seed=seeds[3])
-        self.__grid[self.__width-1][self.__height -
-                                    1].addAgent(self.__agents["monster"])
+            sightRange=3, width=self.__width, height=self.__height,
+            name="monster", seed=seeds[MONSTER_SEED_INDEX])
+        self.__grid[self.__width-1][self.__height -1].addAgent(self.__agents["monster"])
+
         # Place Civilian at (0, 0)
         self.__agents["civilian"] = Civilian(
             startingLocation={'x': 0, 'y': 0},
-            sightRange=3, width=self.__width, height=self.__height, name="civilian", seed=seeds[3])
+            sightRange=3, width=self.__width, height=self.__height,
+            name="civilian", seed=seeds[CIVILIAN_SEED_INDEX])
         self.__grid[0][0].addAgent(self.__agents["civilian"])
+
         # Place Soldier at (width-1, 0)
         self.__agents["soldier"] = Soldier(
             startingLocation={'x': self.__width-1, 'y': 0},
-            sightRange=3, width=self.__width, height=self.__height, name="soldier", seed=seeds[3])
+            sightRange=3, width=self.__width, height=self.__height,
+            name="soldier", seed=seeds[SOLDIER_SEED_INDEX])
         self.__grid[self.__width - 1][0].addAgent(self.__agents["soldier"])
+
         # Place Scientist at (0, height-1)
         self.__agents["scientist"] = Scientist(
             startingLocation={'x': 0, 'y': self.__height-1},
-            sightRange=3, width=self.__width, height=self.__height, name="scientist", seed=seeds[3])
+            sightRange=3, width=self.__width, height=self.__height,
+            name="scientist", seed=seeds[SCIENTIST_SEED_INDEX])
         self.__grid[0][self.__height - 1].addAgent(self.__agents["scientist"])
 
         exit1Locations = [{'x': 0, 'y': 8},

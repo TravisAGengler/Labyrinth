@@ -9,7 +9,7 @@ class Soldier(Agent):
 
     def __init__(self, startingLocation, sightRange, width, height, name, seed=None):
         super(Soldier, self).__init__(
-            startingLocation, sightRange, width, height, name)
+            startingLocation, sightRange, width, height, name, seed)
         self.pickUp(Item.gun)
 
     def getValidActions(self, actions):
