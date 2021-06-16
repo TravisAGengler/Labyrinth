@@ -29,6 +29,7 @@ class SimParams:
 class Run:
     states = []
     current_state: int = 0
+    HUMAN_COUNT = 3
 
     def __init__(self, load_path: str = "", simParams: SimParams = SimParams()):
         if load_path:
@@ -44,31 +45,19 @@ class Run:
         terminated = False
         self.states = [
             Gamestate(width=params.getWidth(), height=params.getHeight())]
+        escapees = []
+        victors = []
+
         while not terminated:
             nextState = copy.deepcopy(self.states[-1])
 
             for agentName, agent in nextState.getAgents().items():
                 if agent.isAlive():
-                    # Is the monster in my cell? (Remember, Monster has priority!) If so, die
-                    if not isinstance(agent, Monster):
-                        curCell = nextState.getCellAt(agent.getLocation()['x'], agent.getLocation()[
-                            'y'])
-                        died = False
-                        for a in curCell.getAgentList():
-                            if isinstance(a, Monster):
-                                died = True
-                                itemsDropped = agent.die()
-                                nextState.removeAgent(agent)
-                                curCell.removeAgent(agent)
-                                for i in itemsDropped:
-                                    curCell.addItem(i)
-                                break
-                        if died:
-                            continue
 
                     agent.observe(nextState.getCellAt(agent.getLocation()['x'],
                                                       agent.getLocation()['y']))
                     action = agent.chooseAction()
+
                     # handle actions all agents can make
                     if action == agent.move:
                         # remove agent from old cell
@@ -77,27 +66,6 @@ class Run:
                         # update agent's internal position
                         action()
                         # place agent in new cell
-                        nextState.getCellAt(agent.getLocation()['x'],
-                                            agent.getLocation()['y']).addAgent(agent)
-                    # handle monster actions
-                    elif isinstance(agent, Monster) and action == agent.kill:
-                        targets = action()
-                        print(f"Monster is killing {targets}")
-                        for target in targets:
-                            itemsDropped = target.die()
-                            # remove target from grid
-                            targetCell = nextState.getCellAt(target.getLocation()["x"],
-                                                             target.getLocation()["y"])
-                            nextState.removeAgent(target)
-                            targetCell.removeAgent(target)
-                            # Drop items in cell
-                            for i in itemsDropped:
-                                # print(f"{target} dropped {i} on death")
-                                targetCell.addItem(i)
-                    elif isinstance(agent, Monster) and action == agent.run:
-                        nextState.getCellAt(agent.getLocation()['x'],
-                                            agent.getLocation()['y']).removeAgent(agent)
-                        action()
                         nextState.getCellAt(agent.getLocation()['x'],
                                             agent.getLocation()['y']).addAgent(agent)
                     elif action == agent.pickUp:
@@ -109,6 +77,47 @@ class Run:
                             nextState.getCellAt(agent.getLocation()['x'],
                                                 agent.getLocation()['y']).removeItem(item)
                             # print(f"{agentName} picked up {item}")
+
+                    # handle monster actions
+                    elif isinstance(agent, Monster) and action == agent.kill:
+                        targets = action()
+                        # print(f"Monster killed {targets}")
+                        for target in targets:
+                            itemsDropped = target.die()
+                            # remove target from grid
+                            targetCell = nextState.getCellAt(target.getLocation()["x"],
+                                                             target.getLocation()["y"])
+                            nextState.removeAgent(target)
+                            targetCell.removeAgent(target)
+                            # Drop items in cell
+                            for i in itemsDropped:
+                                targetCell.addItem(i)
+                    elif isinstance(agent, Monster) and action == agent.dashAttack:
+                        # move the monster forwards
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).removeAgent(agent)
+                        targets = action()
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).addAgent(agent)
+                        # attack the target
+                        for target in targets:
+                            itemsDropped = target.die()
+                            # remove target from grid
+                            targetCell = nextState.getCellAt(target.getLocation()["x"],
+                                                             target.getLocation()["y"])
+                            nextState.removeAgent(target)
+                            targetCell.removeAgent(target)
+                            # Drop items in cell
+                            for i in itemsDropped:
+                                targetCell.addItem(i)
+                    elif isinstance(agent, Monster) and action == agent.run:
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).removeAgent(agent)
+                        action()
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).addAgent(agent)
+
+                    # handle human actions
                     elif not isinstance(agent, Monster) and action == agent.shoot:
                         # See if the agent shot anyone
                         action()  # All this does is remove gun after use from inventory
@@ -165,10 +174,12 @@ class Run:
                                 for _, a in nextState.getAgents().items():
                                     a.learnOfMonsterDeath()
                                 # print(f"{type(target).__name__} was killed by a bullet from {type(agent).__name__}")
+
                     elif not isinstance(agent, Monster) and action == agent.win:
                         nextState.getCellAt(agent.getLocation()['x'],
                                             agent.getLocation()['y']).removeAgent(agent)
                         nextState.removeAgent(agent)
+                        escapees.append(agent)
                     else:
                         action()
 
@@ -176,11 +187,24 @@ class Run:
                              if isinstance(a, Monster)]) > 0
             hasCivilians = len([a for a in nextState.getAgents().values()
                                 if not isinstance(a, Monster)]) > 0
-            if not hasCivilians:
-                print("Monster wins!")
+
+            if not hasCivilians and len(escapees) > 0:
+                for escapee in escapees:
+                    print(escapee.getName() + " escaped!")
+                    escapees.remove(escapee)
+                    victors.append(escapee)
+            
+            if not hasCivilians and len(victors) == 0:
+                print("Monster killed all humans!")
                 terminated = True
+            if not hasCivilians and len(victors) > 0:
+                print("Some humans escaped!")
+                print("Monster survived.")
+            if not hasCivilians and len(victors) == self.HUMAN_COUNT:
+                print("All humans escaped!")
+                print("Monster survived.")
             if not hasMonster:
-                print("Humans win!")
+                print("Humans killed the monster!")
                 terminated = True
             if len(self.states) + 1 >= roundLimit:
                 print(f"No winner after reaching round limit")

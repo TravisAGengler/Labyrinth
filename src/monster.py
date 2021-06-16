@@ -25,8 +25,10 @@ class Monster(Agent):
             validActions.append(self.move)
 
         if self.__canAttack():
-            print("Monster can attack")
             validActions.append(self.kill)
+
+        if self.__canDashAttack():
+            validActions.append(self.dashAttack)
 
         return validActions
 
@@ -99,6 +101,27 @@ class Monster(Agent):
             print(self.getName() + " killed " + target.getName())
         return targets
 
+    def dashAttack(self):
+        """
+        Move forwards and attack at the same time
+        This prevents the agent from always being able to move out of the square of the monster before it can attack
+        :return:  the agent that was killed
+        """
+        self.move()
+        currentCell = self.getState().getCellAt(
+            self.getLocation()["x"], self.getLocation()["y"])
+        agents = currentCell.getAgentList()
+        # frontCell = self.__getFrontCell()
+        # if frontCell:
+        #     agents += frontCell.getAgentList()
+        targets = []
+        for agent in agents:
+            if not isinstance(agent, Monster):
+                targets.append(agent)
+        for target in targets:
+            print(self.getName() + " killed " + target.getName())
+        return targets
+
     def run(self):
         """
         Move two spaces in one action
@@ -120,6 +143,7 @@ class Monster(Agent):
         """
         utility = {
             self.kill: 100,  # monster will always attack when able
+            self.dashAttack: 100,
             self.run: 0,
             # prioritize moving towards target  # TODO:  ambush behavior
             self.move: 10 if self.seenAgents() != [] else 1,
@@ -219,9 +243,13 @@ class Monster(Agent):
         return frontCell
 
     def __canAttack(self):
-        currentCell = self.getState().getCellAt(
-            self.getLocation()["x"], self.getLocation()["y"])
-        # frontCell = self.__getFrontCell()
-
-        # or (frontCell and len(frontCell.getAgentList()))
+        currentCell = self.getState().getCellAt(self.getLocation()["x"],
+                                                self.getLocation()["y"])
         return currentCell.getAgentList() != [self]
+
+    def __canDashAttack(self):
+        targetCell = self.__getFrontCell()
+        if targetCell != None:
+            return targetCell.getAgentList() != []
+        else:
+            return False
