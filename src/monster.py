@@ -25,6 +25,7 @@ class Monster(Agent):
             validActions.append(self.move)
 
         if self.__canAttack():
+            print("Monster can attack")
             validActions.append(self.kill)
 
         return validActions
@@ -87,6 +88,9 @@ class Monster(Agent):
         currentCell = self.getState().getCellAt(
             self.getLocation()["x"], self.getLocation()["y"])
         agents = currentCell.getAgentList()
+        # frontCell = self.__getFrontCell()
+        # if frontCell:
+        #     agents += frontCell.getAgentList()
         targets = []
         for agent in agents:
             if not isinstance(agent, Monster):
@@ -195,10 +199,9 @@ class Monster(Agent):
         else:
             return False
 
-    def __canAttack(self):
+    def __getFrontCell(self):
         currentCell = self.getState().getCellAt(
             self.getLocation()["x"], self.getLocation()["y"])
-
         # Also allow the monster to attack agents in the cell in front of it.
         frontCell = None
         if self.getDirection() == self.UP and not currentCell.isWallUp():
@@ -213,6 +216,12 @@ class Monster(Agent):
         if self.getDirection() == self.RIGHT and not currentCell.isWallRight():
             frontCell = self.getState().getCellAt(
                 self.getLocation()["x"] + 1, self.getLocation()["y"])
+        return frontCell
 
-        if currentCell.getAgentList() != [self] or (frontCell and len(frontCell.getAgentList())):
-            return True
+    def __canAttack(self):
+        currentCell = self.getState().getCellAt(
+            self.getLocation()["x"], self.getLocation()["y"])
+        # frontCell = self.__getFrontCell()
+
+        # or (frontCell and len(frontCell.getAgentList()))
+        return currentCell.getAgentList() != [self]

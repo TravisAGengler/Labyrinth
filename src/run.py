@@ -49,6 +49,23 @@ class Run:
 
             for agentName, agent in nextState.getAgents().items():
                 if agent.isAlive():
+                    # Is the monster in my cell? (Remember, Monster has priority!) If so, die
+                    if not isinstance(agent, Monster):
+                        curCell = nextState.getCellAt(agent.getLocation()['x'], agent.getLocation()[
+                            'y'])
+                        died = False
+                        for a in curCell.getAgentList():
+                            if isinstance(a, Monster):
+                                died = True
+                                itemsDropped = agent.die()
+                                nextState.removeAgent(agent)
+                                curCell.removeAgent(agent)
+                                for i in itemsDropped:
+                                    curCell.addItem(i)
+                                break
+                        if died:
+                            continue
+
                     agent.observe(nextState.getCellAt(agent.getLocation()['x'],
                                                       agent.getLocation()['y']))
                     action = agent.chooseAction()
@@ -65,6 +82,7 @@ class Run:
                     # handle monster actions
                     elif isinstance(agent, Monster) and action == agent.kill:
                         targets = action()
+                        print(f"Monster is killing {targets}")
                         for target in targets:
                             itemsDropped = target.die()
                             # remove target from grid
@@ -142,8 +160,15 @@ class Run:
                                                                  target.getLocation()["y"])
                                 nextState.removeAgent(target)
                                 targetCell.removeAgent(target)
-                                print(
-                                    f"{type(target).__name__} was killed by a bullet from {type(agent).__name__}")
+                                # TODO: For now, notify all agents that the monster is killed.
+                                # Maybe come up with some way for agents to communicate? See a body?
+                                for _, a in nextState.getAgents().items():
+                                    a.learnOfMonsterDeath()
+                                # print(f"{type(target).__name__} was killed by a bullet from {type(agent).__name__}")
+                    elif not isinstance(agent, Monster) and action == agent.win:
+                        nextState.getCellAt(agent.getLocation()['x'],
+                                            agent.getLocation()['y']).removeAgent(agent)
+                        nextState.removeAgent(agent)
                     else:
                         action()
 

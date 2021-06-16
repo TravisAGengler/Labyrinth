@@ -22,6 +22,8 @@ class Agent(ABC):
         self.__isAlive = True
         self.__score = 0
         self.__name = name
+        self.__knowsMonsterIsDead = False
+        self.__fleeCountdown = 0
 
         # map of how to turn based on current direction and desired direction
         # (agentDirection, desiredDirection): turnFunction
@@ -113,6 +115,9 @@ class Agent(ABC):
     def getName(self):
         return self.__name
 
+    def isFleeing(self):
+        return self.__fleeCountdown > 0
+
     """
     Setter Methods
     """
@@ -183,6 +188,8 @@ class Agent(ABC):
         if self.isRememberingPath():
             self.getState().getActiveBreadTrail().addPoint(self.getLocation()["x"],
                                                            self.getLocation()["y"])
+        if self.__fleeCountdown:
+            self.__fleeCountdown -= 1
         return self.__location
 
     def doNothing(self):
@@ -192,6 +199,44 @@ class Agent(ABC):
         """
         return
 
+    def flee(self):
+        cell = self.getState().getCellAt(
+            self.getLocation()['x'], self.getLocation()['y'])
+        # Turn to the direction where there are no walls to run away
+        facing = self.getDirection()
+        if facing == "up":
+            # down left right
+            if not cell.isWallDown():
+                self.turnAround()
+            elif not cell.isWallLeft():
+                self.turnLeft()
+            else:
+                self.turnRight()
+        elif facing == "right":
+            # left down up
+            if not cell.isWallLeft():
+                self.turnAround()
+            elif not cell.isWallDown():
+                self.turnRight()
+            else:
+                self.turnLeft()
+        elif facing == "down":
+            # up left right
+            if not cell.isWallUp():
+                self.turnAround()
+            elif not cell.isWallLeft():
+                self.turnRight()
+            else:
+                self.turnLeft()
+        elif facing == "left":
+            # right up down
+            if not cell.isWallRight():
+                self.turnAround()
+            elif not cell.isWallUp():
+                self.turnRight()
+            else:
+                self.turnLeft()
+        self.__fleeCountdown = 5
 
     """
     Misc
@@ -307,6 +352,15 @@ class Agent(ABC):
         :return:  True if agent is leaving a BreadTrail, False if not
         """
         return len(self.getState().getBreadTrails()) != 0
+
+    def learnOfMonsterDeath(self):
+        """
+        The agent has learned of the monsters death. This is important for the soldier
+        """
+        self.__knowsMonsterIsDead = True
+
+    def knowsMonsterIsDead(self):
+        return self.__knowsMonsterIsDead
 
     """
     Private Methods

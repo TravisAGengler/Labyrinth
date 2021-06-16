@@ -80,21 +80,26 @@ class Gamestate:
                  111237,
                  666999]
 
-        random.seed(seeds[1])
+        random.seed(seeds[3])
         exitNum = random.randint(0, 2)
         researchNum = random.randint(0, 4)
         gunNum = random.randint(0, 4)
         keyNum = random.randint(0, 4)
 
         # Place both Exits at random location for the seed (they are paired together)
-        self.__grid[exit1Locations[exitNum]['x']][exit1Locations[exitNum]['y']].setIsExit(True)
-        self.__grid[exit2Locations[exitNum]['x']][exit2Locations[exitNum]['y']].setIsExit(True)
+        self.__grid[exit1Locations[exitNum]['x']
+                    ][exit1Locations[exitNum]['y']].setIsExit(True)
+        self.__grid[exit2Locations[exitNum]['x']
+                    ][exit2Locations[exitNum]['y']].setIsExit(True)
         # Place Research at random location for the seed
-        self.__grid[researchLocations[researchNum]['x']][researchLocations[researchNum]['y']].addItem(Item.research)
+        self.__grid[researchLocations[researchNum]['x']
+                    ][researchLocations[researchNum]['y']].addItem(Item.research)
         # Place Gun at random location for the seed
-        self.__grid[gunLocations[gunNum]['x']][gunLocations[gunNum]['y']].addItem(Item.gun)
+        self.__grid[gunLocations[gunNum]['x']
+                    ][gunLocations[gunNum]['y']].addItem(Item.gun)
         # Place Keycard at random location for the seed
-        self.__grid[keyCardLocations[keyNum]['x']][keyCardLocations[keyNum]['y']].addItem(Item.keyCard)
+        self.__grid[keyCardLocations[keyNum]['x']
+                    ][keyCardLocations[keyNum]['y']].addItem(Item.keyCard)
 
         # Place walls
         # Top row of maze
