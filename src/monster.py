@@ -5,7 +5,7 @@ from agent import Agent
 
 class Monster(Agent):
 
-    def __init__(self, startingLocation, sightRange, width, height, name):
+    def __init__(self, startingLocation, sightRange, width, height, name, seed=None):
         super(Monster, self).__init__(
             startingLocation, sightRange, width, height, name)
         self.addAction(self.kill)

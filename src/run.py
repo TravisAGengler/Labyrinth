@@ -193,7 +193,7 @@ class Run:
                     print(escapee.getName() + " escaped!")
                     escapees.remove(escapee)
                     victors.append(escapee)
-            
+
             if not hasCivilians and len(victors) == 0:
                 print("Monster killed all humans!")
                 terminated = True

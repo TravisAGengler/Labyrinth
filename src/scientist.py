@@ -7,7 +7,7 @@ from monster import Monster
 
 class Scientist(Agent):
 
-    def __init__(self, startingLocation, sightRange, width, height, name):
+    def __init__(self, startingLocation, sightRange, width, height, name, seed=None):
         super(Scientist, self).__init__(
             startingLocation, sightRange, width, height, name)
         self.pickUp(Item.keyCard)

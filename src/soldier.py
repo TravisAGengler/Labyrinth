@@ -7,7 +7,7 @@ from monster import Monster
 
 class Soldier(Agent):
 
-    def __init__(self, startingLocation, sightRange, width, height, name):
+    def __init__(self, startingLocation, sightRange, width, height, name, seed=None):
         super(Soldier, self).__init__(
             startingLocation, sightRange, width, height, name)
         self.pickUp(Item.gun)

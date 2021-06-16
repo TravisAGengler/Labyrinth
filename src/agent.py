@@ -12,11 +12,13 @@ class Agent(ABC):
     RIGHT = "right"
     DIRECTIONS = [UP, DOWN, LEFT, RIGHT]
 
-    def __init__(self, startingLocation, sightRange, width, height, name):
+    def __init__(self, startingLocation, sightRange, width, height, name, seed=None):
         self.__location = startingLocation  # {'x': x, 'y', y}
         self.__sightRange = sightRange  # how far the agent can see in front of itself
         self.__state = State(memoryLoss=0, width=width, height=height)
         # TODO: possibly change how direction is selected, will depend on how agents are spawned in
+        if seed != None:
+            random.seed(seed)
         self.__direction = random.choice(self.DIRECTIONS)
         self.__inventory = []
         self.__isAlive = True

@@ -28,29 +28,38 @@ class Gamestate:
         self.__linkCells()
 
     def __applyLayout(self):
+
+        seeds = [365241,
+                 543210,
+                 976458,
+                 111237,
+                 666999]
+
+        random.seed(seeds[3])
+
         # Place agents
 
         # TRICKY: With the way things are now, the order here determines move priority
         # Place Monster at (width-1, height-1)
         self.__agents["monster"] = Monster(
             startingLocation={'x': self.__width-1, 'y': self.__height-1},
-            sightRange=3, width=self.__width, height=self.__height, name="monster")
+            sightRange=3, width=self.__width, height=self.__height, name="monster", seed=seeds[3])
         self.__grid[self.__width-1][self.__height -
                                     1].addAgent(self.__agents["monster"])
         # Place Civilian at (0, 0)
         self.__agents["civilian"] = Civilian(
             startingLocation={'x': 0, 'y': 0},
-            sightRange=3, width=self.__width, height=self.__height, name="civilian")
+            sightRange=3, width=self.__width, height=self.__height, name="civilian", seed=seeds[3])
         self.__grid[0][0].addAgent(self.__agents["civilian"])
         # Place Soldier at (width-1, 0)
         self.__agents["soldier"] = Soldier(
             startingLocation={'x': self.__width-1, 'y': 0},
-            sightRange=3, width=self.__width, height=self.__height, name="soldier")
+            sightRange=3, width=self.__width, height=self.__height, name="soldier", seed=seeds[3])
         self.__grid[self.__width - 1][0].addAgent(self.__agents["soldier"])
         # Place Scientist at (0, height-1)
         self.__agents["scientist"] = Scientist(
             startingLocation={'x': 0, 'y': self.__height-1},
-            sightRange=3, width=self.__width, height=self.__height, name="scientist")
+            sightRange=3, width=self.__width, height=self.__height, name="scientist", seed=seeds[3])
         self.__grid[0][self.__height - 1].addAgent(self.__agents["scientist"])
 
         exit1Locations = [{'x': 0, 'y': 8},
@@ -74,13 +83,7 @@ class Gamestate:
                             {'x': 3, 'y': 2},
                             {'x': 8, 'y': 9},
                             {'x': 6, 'y': 5}]
-        seeds = [365241,
-                 543210,
-                 976458,
-                 111237,
-                 666999]
 
-        random.seed(seeds[3])
         exitNum = random.randint(0, 2)
         researchNum = random.randint(0, 4)
         gunNum = random.randint(0, 4)
