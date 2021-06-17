@@ -1,11 +1,12 @@
 import random
-from cell import Cell
 
+from cell import Cell
 from civilian import Civilian
 from item import Item
 from monster import Monster
 from scientist import Scientist
 from soldier import Soldier
+from rng import labyrinthSeed
 
 
 class Gamestate:
@@ -26,22 +27,10 @@ class Gamestate:
                 self.__grid[i].append(cell)
         self.__applyLayout()
         self.__linkCells()
+        self.__escapees = []
+        self.__victors = []
 
     def __applyLayout(self):
-        ITEM_SEED_INDEX = 2
-        MONSTER_SEED_INDEX = 3
-        CIVILIAN_SEED_INDEX = 2
-        SOLDIER_SEED_INDEX = 1
-        SCIENTIST_SEED_INDEX = 0
-
-        seeds = [365241,
-                 543210,
-                 976458,
-                 111237,
-                 666999]
-
-        random.seed(seeds[ITEM_SEED_INDEX])
-
         # Place agents
 
         # TRICKY: With the way things are now, the order here determines move priority
@@ -49,28 +38,29 @@ class Gamestate:
         self.__agents["monster"] = Monster(
             startingLocation={'x': self.__width-1, 'y': self.__height-1},
             sightRange=3, width=self.__width, height=self.__height,
-            name="monster", seed=seeds[MONSTER_SEED_INDEX])
-        self.__grid[self.__width-1][self.__height -1].addAgent(self.__agents["monster"])
+            name="monster")
+        self.__grid[self.__width-1][self.__height -
+                                    1].addAgent(self.__agents["monster"])
 
         # Place Civilian at (0, 0)
         self.__agents["civilian"] = Civilian(
             startingLocation={'x': 0, 'y': 0},
             sightRange=3, width=self.__width, height=self.__height,
-            name="civilian", seed=seeds[CIVILIAN_SEED_INDEX])
+            name="civilian")
         self.__grid[0][0].addAgent(self.__agents["civilian"])
 
         # Place Soldier at (width-1, 0)
         self.__agents["soldier"] = Soldier(
             startingLocation={'x': self.__width-1, 'y': 0},
             sightRange=3, width=self.__width, height=self.__height,
-            name="soldier", seed=seeds[SOLDIER_SEED_INDEX])
+            name="soldier")
         self.__grid[self.__width - 1][0].addAgent(self.__agents["soldier"])
 
         # Place Scientist at (0, height-1)
         self.__agents["scientist"] = Scientist(
             startingLocation={'x': 0, 'y': self.__height-1},
             sightRange=3, width=self.__width, height=self.__height,
-            name="scientist", seed=seeds[SCIENTIST_SEED_INDEX])
+            name="scientist")
         self.__grid[0][self.__height - 1].addAgent(self.__agents["scientist"])
 
         exit1Locations = [{'x': 0, 'y': 8},
@@ -95,6 +85,7 @@ class Gamestate:
                             {'x': 8, 'y': 9},
                             {'x': 6, 'y': 5}]
 
+        labyrinthSeed('layout')
         exitNum = random.randint(0, 2)
         researchNum = random.randint(0, 4)
         gunNum = random.randint(0, 4)
@@ -277,3 +268,18 @@ class Gamestate:
     def removeAgent(self, agent):
         self.__agents = {an: a for an,
                          a in self.__agents.items() if a != agent}
+
+    def addEscapee(self, agent):
+        self.__escapees.append(agent)
+
+    def removeEscapee(self, agent):
+        self.__escapees = [e for e in self.__escapees if e != agent]
+
+    def addVictor(self, agent):
+        self.__victors.append(agent)
+
+    def getEscapees(self):
+        return self.__escapees
+
+    def getVictors(self):
+        return self.__victors

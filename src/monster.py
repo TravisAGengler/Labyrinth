@@ -5,9 +5,9 @@ from agent import Agent
 
 class Monster(Agent):
 
-    def __init__(self, startingLocation, sightRange, width, height, name, seed=None):
+    def __init__(self, startingLocation, sightRange, width, height, name):
         super(Monster, self).__init__(
-            startingLocation, sightRange, width, height, name, seed)
+            startingLocation, sightRange, width, height, name)
         self.addAction(self.kill)
         self.addAction(self.run)
 
@@ -97,8 +97,8 @@ class Monster(Agent):
         for agent in agents:
             if not isinstance(agent, Monster):
                 targets.append(agent)
-        for target in targets:
-            print(self.getName() + " killed " + target.getName())
+        # for target in targets:
+        #     print(self.getName() + " killed " + target.getName())
         return targets
 
     def dashAttack(self):
@@ -118,8 +118,8 @@ class Monster(Agent):
         for agent in agents:
             if not isinstance(agent, Monster):
                 targets.append(agent)
-        for target in targets:
-            print(self.getName() + " killed " + target.getName())
+        # for target in targets:
+        #     print(self.getName() + " killed " + target.getName())
         return targets
 
     def run(self):

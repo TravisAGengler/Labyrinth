@@ -38,3 +38,6 @@ Saving and loading of Runs:
 - Save a run by pressing "s". That will generate a timestamped .pkl in the direcory you ran from
 - Load a run by running `labyrinth.py` with the `--run` option and point it to a previously saved .pkl
 - Run `labyrinth.py --help` for more details
+
+Generate run statistics:
+- Run `labyrinth.py` with the `-s` option. That will run a number of simulations (20 as of now) and report stats on those simulations

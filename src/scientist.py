@@ -7,9 +7,9 @@ from monster import Monster
 
 class Scientist(Agent):
 
-    def __init__(self, startingLocation, sightRange, width, height, name, seed=None):
+    def __init__(self, startingLocation, sightRange, width, height, name):
         super(Scientist, self).__init__(
-            startingLocation, sightRange, width, height, name, seed)
+            startingLocation, sightRange, width, height, name)
         self.pickUp(Item.keyCard)
 
     def getValidActions(self, actions):

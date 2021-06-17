@@ -7,9 +7,9 @@ from monster import Monster
 
 class Soldier(Agent):
 
-    def __init__(self, startingLocation, sightRange, width, height, name, seed=None):
+    def __init__(self, startingLocation, sightRange, width, height, name):
         super(Soldier, self).__init__(
-            startingLocation, sightRange, width, height, name, seed)
+            startingLocation, sightRange, width, height, name)
         self.pickUp(Item.gun)
 
     def getValidActions(self, actions):
@@ -137,7 +137,8 @@ class Soldier(Agent):
                     self.getLocation()["x"], self.getLocation()["y"])
 
         # agent will head back for the exit when it has the key and knows where the exit is
-        if Item.keyCard in self.getInventory() and self.isRememberingPath():
+        # The soldier also must have killed the monster to escape
+        if Item.keyCard in self.getInventory() and self.isRememberingPath() and self.knowsMonsterIsDead():
             nextCellLocation = self.getState().getActiveBreadTrail().getNextStep(self.getLocation()["x"],
                                                                                  self.getLocation()["y"])
             if nextCellLocation == None:

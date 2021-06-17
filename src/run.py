@@ -2,7 +2,7 @@ import copy
 import pickle
 import time
 
-
+from rng import labyrinthSeed, labyrinthSetSeedIdxs, LABYRINTH_SEED_IDXS
 from gameState import Gamestate
 from civilian import Civilian
 from soldier import Soldier
@@ -15,15 +15,19 @@ class SimParams:
     This allows us to configure the simulation
     """
 
-    def __init__(self, width: int = 10, height: int = 10):
+    def __init__(self, width: int = 10, height: int = 10, seedIdxs=LABYRINTH_SEED_IDXS):
         self.__width = width
         self.__height = height
+        self.__seedIdxs = seedIdxs
 
     def getWidth(self):
         return self.__width
 
     def getHeight(self):
         return self.__height
+
+    def getSeedIdxs(self):
+        return self.__seedIdxs
 
 
 class Run:
@@ -41,12 +45,14 @@ class Run:
         self.current_state = 0
 
     def __simulateRun(self, params: SimParams):
+        # Set the seeds
+
+        labyrinthSetSeedIdxs(params.getSeedIdxs())
+
         roundLimit = 200
         terminated = False
         self.states = [
             Gamestate(width=params.getWidth(), height=params.getHeight())]
-        escapees = []
-        victors = []
 
         while not terminated:
             nextState = copy.deepcopy(self.states[-1])
@@ -173,41 +179,48 @@ class Run:
                                 # Maybe come up with some way for agents to communicate? See a body?
                                 for _, a in nextState.getAgents().items():
                                     a.learnOfMonsterDeath()
-                                # print(f"{type(target).__name__} was killed by a bullet from {type(agent).__name__}")
+                                # print(f"{type(agent).__name__} killed {type(target).__name__}")
 
                     elif not isinstance(agent, Monster) and action == agent.win:
                         nextState.getCellAt(agent.getLocation()['x'],
                                             agent.getLocation()['y']).removeAgent(agent)
                         nextState.removeAgent(agent)
-                        escapees.append(agent)
+                        nextState.addEscapee(agent)
                     else:
                         action()
 
             hasMonster = len([a for a in nextState.getAgents().values()
                              if isinstance(a, Monster)]) > 0
-            hasCivilians = len([a for a in nextState.getAgents().values()
-                                if not isinstance(a, Monster)]) > 0
+            hasHumans = len([a for a in nextState.getAgents().values()
+                             if not isinstance(a, Monster)]) > 0
 
-            if not hasCivilians and len(escapees) > 0:
-                for escapee in escapees:
-                    print(escapee.getName() + " escaped!")
-                    escapees.remove(escapee)
-                    victors.append(escapee)
+            # if not hasHumans and len(nextState.getEscapees()) > 0:
+            #     for escapee in nextState.getEscapees():
+            #         # print(escapee.getName() + " escaped!")
+            #         nextState.removeEscapee(escapee)
+            #         nextState.addVictor(escapee)
 
-            if not hasCivilians and len(victors) == 0:
-                print("Monster killed all humans!")
+            if not hasHumans and len(nextState.getVictors()) == 0:
+                # print("Monster killed all humans!")
+                m = list(nextState.getAgents().values())[0]
+                nextState.addVictor(m)
                 terminated = True
-            if not hasCivilians and len(victors) > 0:
-                print("Some humans escaped!")
-                print("Monster survived.")
-            if not hasCivilians and len(victors) == self.HUMAN_COUNT:
-                print("All humans escaped!")
-                print("Monster survived.")
+            if not hasHumans and len(nextState.getVictors()) > 0:
+                # print("Some humans escaped!")
+                # print("Monster survived.")
+                pass
+            if not hasHumans and len(nextState.getVictors()) == self.HUMAN_COUNT:
+                # print("All humans escaped!")
+                # print("Monster survived.")
+                pass
             if not hasMonster:
-                print("Humans killed the monster!")
+                humans = list(nextState.getAgents().values())
+                for h in humans:
+                    nextState.addVictor(h)
+                # print("Humans killed the monster!")
                 terminated = True
             if len(self.states) + 1 >= roundLimit:
-                print(f"No winner after reaching round limit")
+                # print(f"No winner after reaching round limit")
                 terminated = True
 
             self.states.append(nextState)
@@ -241,3 +254,19 @@ class Run:
 
     def getState(self) -> Gamestate:
         return self.states[self.current_state]
+
+    def getStats(self):
+        terminalState = self.states[-1]
+
+        victors = [a.getName() for a in terminalState.getVictors()]
+        escaped = [a.getName() for a in terminalState.getEscapees()]
+
+        allAgents = [a for a in self.states[0].getAgents()]
+        remaningAgents = [a for a in terminalState.getAgents()]
+
+        killed = [
+            a for a in allAgents if a not in victors and a not in escaped and a not in remaningAgents]
+
+        nRounds = len(self.states)
+
+        return nRounds, victors, escaped, killed
