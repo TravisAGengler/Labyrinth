@@ -87,7 +87,7 @@ class Renderer:
             self.__displaySurface.blit(itemImage, (xr, yr))
         if item == Item.gun:
             itemImage = pygame.image.load("shotgun.png")
-            itemImage = pygame.transform.scale(itemImage, (self.__cellWidth // 2, self.__cellHeight // 2))
+            itemImage = pygame.transform.scale(itemImage, (self.__cellWidth, self.__cellHeight // 2))
             self.__displaySurface.blit(itemImage, (xr, yr))
         if item == Item.research:
             itemImage = pygame.image.load("science.png")
