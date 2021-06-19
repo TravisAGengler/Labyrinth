@@ -82,20 +82,17 @@ class Renderer:
         color = COLOR_DARKGRAY
         xr, yr = (x * self.__cellWidth, y * self.__cellHeight)
         if item == Item.keyCard:
-            color = COLOR_DARKBLUE
-            xr = xr
-            yr = yr
+            itemImage = pygame.image.load("keycard.png")
+            itemImage = pygame.transform.scale(itemImage, (self.__cellWidth // 2, self.__cellHeight // 2))
+            self.__displaySurface.blit(itemImage, (xr, yr))
         if item == Item.gun:
-            color = COLOR_DARKGREEN
-            xr = xr + self.__cellWidth // 2
-            yr = yr
+            itemImage = pygame.image.load("shotgun.png")
+            itemImage = pygame.transform.scale(itemImage, (self.__cellWidth // 2, self.__cellHeight // 2))
+            self.__displaySurface.blit(itemImage, (xr, yr))
         if item == Item.research:
-            color = COLOR_YELLOW
-            xr = xr
-            yr = yr + self.__cellHeight // 2
-        # TODO: When we get images, draw the image instead.
-        self.__drawRect(xr, yr, self.__cellWidth // 2,
-                        self.__cellHeight // 2, color)
+            itemImage = pygame.image.load("science.png")
+            itemImage = pygame.transform.scale(itemImage, (self.__cellWidth // 2, self.__cellHeight // 2))
+            self.__displaySurface.blit(itemImage, (xr, yr))
 
     def __drawAgent(self, x: int, y: int, agent: Agent):
         color = COLOR_DARKGRAY
